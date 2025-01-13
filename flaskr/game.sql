@@ -1,26 +1,27 @@
-DROP TABLE IF EXIST House;
-DROP TABLE IF EXIST Player;
-DROP TABLE IF EXIST GameInstace;
+DROP TABLE IF EXISTS House;
+DROP TABLE IF EXISTS Player;
+DROP TABLE IF EXISTS GameInstace;
 
-CREATE TABLE House {
-	tableID integer pk increments unique
-	cardsOnTable varchar(20) null unique
-	ectsPool integer(2) null unique
-	whoWon integer > Player.playerID
-}
+CREATE TABLE GameInstace (
+	gameID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+	playerCount INTEGER(2) UNIQUE,
+	whichPlayerTurn INTEGER(2) UNIQUE
+);
 
-CREATE TABLE Player {
-	playerID integer(3) pk increments unique
-	ectsPoints integer(4) def(30)
-	hand varchar(7) unique
-	playerState integer
-	isStarting integer(1)
-	gameID integer *> GameInstace.gameID
-}
+CREATE TABLE Player (
+	playerID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+	ectsPoints INTEGER,
+	hand VARCHAR(7) UNIQUE,
+	playerState INTEGER(2),
+	isStarting INTEGER(1),
+	gameID INTEGER,
+	FOREIGN KEY (gameID) REFERENCES GameInstace (gameID)
+);
 
-CREATE TABLE GameInstace {
-	gameID integer pk increments unique
-	playerCount integer(2) null unique
-	playerInfo integer(2) unique >* PlayersInfo.infoID
-	whichPlayerTurn integer(2) unique
-}
+CREATE TABLE House (
+	tableID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+	cardsOnTable VARCHAR(20) NULL UNIQUE,
+	ectsPool INTEGER(2) NULL UNIQUE,
+	whoWon INTEGER,
+	FOREIGN KEY (whoWon) REFERENCES Player (playerID)
+);
