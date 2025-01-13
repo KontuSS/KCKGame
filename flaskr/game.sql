@@ -23,5 +23,4 @@ CREATE TABLE House (
 	cardsOnTable VARCHAR(20) NULL UNIQUE,
 	ectsPool INTEGER(2) NULL UNIQUE,
 	whoWon INTEGER,
-	FOREIGN KEY (whoWon) REFERENCES Player (playerID)
-);
+	FOREIGN KEY (whoWon) REFERENCES Player (play
