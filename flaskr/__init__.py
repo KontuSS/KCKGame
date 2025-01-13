@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+from . import requests
 
 
 def create_app(test_config=None):
@@ -28,9 +29,8 @@ def create_app(test_config=None):
     from . import db
     db.init_app(app)
 
-    # a simple page that says hello
-    @app.route('/Hello')
-    def hello():
-        return 'Hello, World!'    
-    
+    @app.route('/get-game')
+    def get_game():
+        return requests.get_game_instance()
+
     return app

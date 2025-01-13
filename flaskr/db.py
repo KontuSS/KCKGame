@@ -4,7 +4,6 @@ from datetime import datetime
 import click
 from flask import current_app, g
 
-
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
@@ -31,6 +30,12 @@ def init_db():
 
     with current_app.open_resource('game.sql') as f:
         db.executescript(f.read().decode('utf8'))
+
+    # populate first row as current game
+    try:
+        db.executescript("INSERT INTO GameInstance (gameID, playerCount, whichPlayerTurn) VALUES (0, 0, null)")
+    except:
+        print('Error while inserting new GameInstance')
 
 
 @click.command('init-db')

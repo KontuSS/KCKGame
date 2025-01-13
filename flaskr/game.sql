@@ -1,11 +1,11 @@
 DROP TABLE IF EXISTS House;
 DROP TABLE IF EXISTS Player;
-DROP TABLE IF EXISTS GameInstace;
+DROP TABLE IF EXISTS GameInstance;
 
-CREATE TABLE GameInstace (
+CREATE TABLE GameInstance (
 	gameID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
 	playerCount INTEGER(2) UNIQUE,
-	whichPlayerTurn INTEGER(2) UNIQUE
+	whichPlayerTurn INTEGER(2) NULL UNIQUE
 );
 
 CREATE TABLE Player (
@@ -15,7 +15,7 @@ CREATE TABLE Player (
 	playerState INTEGER(2),
 	isStarting INTEGER(1),
 	gameID INTEGER,
-	FOREIGN KEY (gameID) REFERENCES GameInstace (gameID)
+	FOREIGN KEY (gameID) REFERENCES GameInstance (gameID)
 );
 
 CREATE TABLE House (
