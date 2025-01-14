@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask
-from . import requests
+from networking.requests import get_game_instance
 
 
 def create_app(test_config=None):
@@ -31,6 +31,6 @@ def create_app(test_config=None):
 
     @app.route('/get-game')
     def get_game():
-        return requests.get_game_instance()
+        return get_game_instance()
 
     return app
