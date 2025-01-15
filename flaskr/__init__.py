@@ -1,8 +1,11 @@
 import os
 
 from flask import Flask
-from networking.requests import get_game_instance
+import json
 
+from networking.requests import get_game_instance
+from logic.game_classes import Game
+from networking.requests import *
 
 def create_app(test_config=None):
     # create and configure the app
@@ -29,8 +32,25 @@ def create_app(test_config=None):
     from . import db
     db.init_app(app)
 
+    # ======== GAME CODE START ========
+    game = Game()
+    # ======== GAME CODE END ========
+    
+    
+    # ======== ENDPOINTS START ========
+    
     @app.route('/get-game')
     def get_game():
         return get_game_instance()
+    
+    @app.route('/get-players-count')
+    def get_players_count():
+        return str(game.player_count)
+    
+    @app.route('/join-game', methods=['POST'])
+    def join_game():
+        return join_game_request(game)
+
+    # ======== ENDPOINTS END ========
 
     return app
