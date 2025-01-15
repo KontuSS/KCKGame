@@ -41,7 +41,7 @@ def join_game_request(game: Game):
         
         player_id = game.add_new_player(body.name)
 
-        return jsonify({'player_id': player_id, 'hand': []}), 200
+        return jsonify({'playerId': player_id, 'hand': []}), 200
     except PokerError as error:
         return error.message, error.status_code
     except:
@@ -61,7 +61,7 @@ def declare_player_ready(game: Game):
         body = DeclarePlayerReadyBody(request.json)
         
         game.set_player_state(body.playerId, PlayerState.READY)
-        return None, 200
+        return '', 200
     except PokerError as error:
         return error.message, error.status_code
     except:
