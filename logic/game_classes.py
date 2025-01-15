@@ -70,3 +70,12 @@ class Game:
 
     def set_player_turn(self, player_id: int):
         self.which_player_turn = player_id
+
+    def set_player_state(self, player_id: int, player_state: PlayerState):
+        player_index
+
+        for index, player in enumerate(self.players):
+            if(player.player_id == player_id):
+                player_index = index
+        
+        self.players[index].player_state = player_state

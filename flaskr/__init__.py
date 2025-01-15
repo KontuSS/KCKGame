@@ -5,6 +5,7 @@ import json
 
 from networking.requests import get_game_instance
 from logic.game_classes import Game
+from logic.game_logic import start_main_game_loop
 from networking.requests import *
 
 def create_app(test_config=None):
@@ -34,6 +35,10 @@ def create_app(test_config=None):
 
     # ======== GAME CODE START ========
     game = Game()
+    
+    # FIXME: cannot start main loop here
+    # start_main_game_loop(game)
+
     # ======== GAME CODE END ========
     
     
@@ -50,7 +55,10 @@ def create_app(test_config=None):
     @app.route('/join-game', methods=['POST'])
     def join_game():
         return join_game_request(game)
-
+    
+    @app.route('/declare-ready-to-play', methods=['POST'])
+    def declare_ready_to_play():
+        return declare_player_ready(game)
     # ======== ENDPOINTS END ========
 
     return app

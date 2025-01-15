@@ -3,7 +3,7 @@ from flask import request, jsonify
 import json
 
 from flaskr.db import get_db
-from logic.game_classes import Game
+from logic.game_classes import Game, PlayerState
 from networking.errors import PokerError
 
 # db.execute return type is TUPLE or None
@@ -23,7 +23,7 @@ def get_game_instance():
         return 'An exception occurred while performing get_game_instance: {}'.format(error)
     
 
-
+# =============================================
 class JoinGameBody:
     name: str
 
@@ -31,7 +31,7 @@ class JoinGameBody:
         self.__dict__ = body
 
 # body: { name: str }
-# response: { player_id: int }
+# response: { player_id: int } and status code
 def join_game_request(game: Game):
     try:
         body = JoinGameBody(request.json)
@@ -46,3 +46,23 @@ def join_game_request(game: Game):
         return error.message, error.status_code
     except:
         return 'Name is required', 400
+
+# =============================================
+class DeclarePlayerReadyBody:
+    playerId: int
+
+    def __init__(self, body):
+        self.__dict__ = body
+
+# body: { playerId: int }
+# response: {} and status code
+def declare_player_ready(game: Game):
+    try:
+        body = DeclarePlayerReadyBody(request.json)
+        
+        game.set_player_state(body.playerId, PlayerState.READY)
+        return None, 200
+    except PokerError as error:
+        return error.message, error.status_code
+    except:
+        return 'Error occured', 500
