@@ -30,6 +30,7 @@ class JoinGameBody:
     def __init__(self, body):
         self.__dict__ = body
 
+# /join-game [POST]
 # body: { name: str }
 # response: { player_id: int } and status code
 def join_game_request(game: Game):
@@ -54,6 +55,7 @@ class DeclarePlayerReadyBody:
     def __init__(self, body):
         self.__dict__ = body
 
+# /declare-ready-to-play [POST]
 # body: { playerId: int }
 # response: {} and status code
 def declare_player_ready(game: Game):
