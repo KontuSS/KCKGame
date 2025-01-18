@@ -76,4 +76,7 @@ class Game:
         for index, player in enumerate(self.players):
             if(player.player_id == player_id):
                 self.players[index].player_state = player_state
-                break
+                return
+
+        raise PokerError('User with this id does not exist in current game', 409)  
+        
