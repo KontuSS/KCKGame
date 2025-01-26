@@ -2,13 +2,9 @@
 
 ## For developer
 
-- py -m pip install flask
-- py -m pip install PyGame
-
 ## Running server
 
-- Mac: bash ./scripts/Mac_start.sh
-- Windows: ./scripts/Win_start.sh
+python server/server.py
 
 ## Cards notation
 

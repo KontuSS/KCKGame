@@ -1,5 +1,13 @@
 import socket
 import threading
+import sys
+import os
+
+# Add the project root directory to sys.path
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if project_root not in sys.path:
+    sys.path.append(project_root)
+
 from database.server_db import *
 
 # Server settings
@@ -20,11 +28,11 @@ def handle_client(client, address):
     print(f"New connection: {address}")
 
     # Receive client's ID
-    client.sendall("Send your ID:".encode('utf-8'))
     client_id = client.recv(1024).decode('utf-8')
-
+        
     # Retrieve client information from the database
     client_info = get_client_from_db(client_id)
+    
     if client_info:
         client.sendall(f"Welcome {client_info[1]} from {client_info[2]} department!".encode('utf-8'))
     else:

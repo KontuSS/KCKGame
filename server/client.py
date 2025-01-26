@@ -1,22 +1,31 @@
 import socket
-from database.client_db import *
+import sys
+import os
 
+# Add the project root directory to sys.path
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if project_root not in sys.path:
+    sys.path.append(project_root)
+
+from database.client_db import *
 # Server connection settings
 HOST = '127.0.0.1'
 PORT = 12345
 
 def start_client():
     """Start the client and send its information to the server."""
-    setup_client_database()
 
     # Check if client info already exists
-    client_info = get_client_info()
-    if not client_info:
-        client_id, name, department = generate_client_info()
-        print(f"Generated Client: ID={client_id}, Name={name}, Department={department}")
-    else:
-        client_id, name, department = client_info
-        print(f"Existing Client: ID={client_id}, Name={name}, Department={department}")
+    # client_info = get_client_info()
+    # if not client_info:
+    #     client_id, name, department = generate_client_info()
+    #     print(f"Generated Client: ID={client_id}, Name={name}, Department={department}")
+    # else:
+    #     client_id, name, department = client_info
+    #     print(f"Existing Client: ID={client_id}, Name={name}, Department={department}")
+
+    client_id, name, department = generate_client_info()
+    print(f"Generated Client: ID={client_id}, Name={name}, Department={department}")
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((HOST, PORT))
