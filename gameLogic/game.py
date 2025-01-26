@@ -8,10 +8,12 @@ if project_root not in sys.path:
     sys.path.append(project_root)
 
 from database.server_db import *
+from database.client_db import *
 
 # Card Deck
-SUITS = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
+SUITS = ['H', 'D', 'C', 'S']
 RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+
 DECK = [f"{rank} of {suit}" for suit in SUITS for rank in RANKS]
 
 # Deal cards to players
@@ -63,3 +65,67 @@ def get_latest_game_id():
     game_id = cursor.fetchone()[0]
     conn.close()
     return game_id
+
+
+#template game loop, need to link to db and server action
+def game_loop():
+    # Step 1: Initialize the game (start new game, deal cards, etc.)
+    players = get_all_players()
+    game_id = 1  # Simulated game ID for this example
+
+    # Start the game
+    print("Starting a new game...")
+    broadcast_game_message("The game is starting!")
+    update_game_state(game_id, STATE_IN_PROGRESS)
+    
+    # Step 2: Deal cards to players
+    hands = deal_cards(players, game_id)
+
+    # Step 3: Main game loop
+    while True:
+        game_state = get_game_state(game_id)
+        
+        if game_state == STATE_FINISHED:
+            break  # End the game if it's finished
+        
+        # Step 3.1: Get current player
+        current_player_id = get_current_player(game_id)
+        print(f"Player {current_player_id}'s turn")
+        
+        # Step 3.2: Simulate player action (e.g., fold, bet, call)
+        action = player_action(current_player_id, ACTION_BET)  # Example: player bets
+        
+        # Step 3.3: Handle action
+        if action == ACTION_FOLD:
+            broadcast_game_message(f"Player {current_player_id} has folded.")
+            # In a real game, you'd remove the player from the active pool
+        elif action == ACTION_BET:
+            broadcast_game_message(f"Player {current_player_id} has placed a bet.")
+        elif action == ACTION_CALL:
+            broadcast_game_message(f"Player {current_player_id} has called the bet.")
+        
+        # Step 3.4: Check if all players have completed their actions
+        # (for simplicity, we assume that after each player's turn, everyone acts)
+        # Here you can check if all players have folded or called, or if a winner is determined.
+        
+        # Simulating next player turn
+        time.sleep(1)  # Pause to simulate real-time game
+
+        # For this example, just rotate between players
+        next_player = (current_player_id % len(players)) + 1
+        print(f"Next player is {next_player}")
+        
+        # Example: Game ends when players have finished their turns
+        if all([True for _ in players]):  # Replace with actual check
+            update_game_state(game_id, STATE_FINISHED)
+            break
+    
+    # Step 4: Determine winner based on hands
+    print("Game Over!")
+    winner_id = 1  # Simulated winner ID for example
+    print(f"Player {winner_id} wins the game!")
+    
+    
+# Running the main game loop
+if __name__ == '__main__':
+    game_loop()

@@ -7,7 +7,7 @@ def setup_database():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS clients (
+        CREATE TABLE IF NOT EXISTS players (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             department TEXT NOT NULL
@@ -17,8 +17,8 @@ def setup_database():
         CREATE TABLE IF NOT EXISTS games (
             game_id INTEGER PRIMARY KEY AUTOINCREMENT,
             state TEXT NOT NULL,  -- 'waiting', 'in-progress', 'finished'
-            current_player_id INTEGER,  -- Points to player who’s currently playing
-            winner_id INTEGER  -- Points to the winning player
+            current_player_id INTEGER,  -- Points to player whos currently playing
+            winner_id INTEGER  -- Points to the winning playerc
             )
     ''')
     cursor.execute('''
