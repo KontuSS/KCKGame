@@ -45,43 +45,30 @@ def evaluate_hand(hand):
     else:
         return "High Card"
 
-# Start a new game
-def start_new_game(players):
+#template game loop, need to link to db and server action
+def game_loop():
     # Step 1: Add the game to the database
     add_new_game()
 
     # Step 2: Retrieve game_id from database
     game_id = get_latest_game_id()
 
-    # Step 3: Deal cards to players
-    deal_cards(players, game_id)
-
-    # Step 4: Update the game state
-    first_player_id = players[0]['id']
-    start_game(game_id, first_player_id)
-
-    return game_id
-
-# Get the latest game ID (just an example)
-def get_latest_game_id():
-    conn = sqlite3.connect('client.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT game_id FROM games ORDER BY game_id DESC LIMIT 1')
-    game_id = cursor.fetchone()[0]
-    conn.close()
-    return game_id
-
-
-#template game loop, need to link to db and server action
-def game_loop():
-    # Step 1: Initialize the game (start new game, deal cards, etc.)
+    # Step 3: Get all current players from database
     players = get_all_players()
-    game_id = 1  # Simulated game ID for this example
+
+    # Step 4: Deal cards to players
+    deal_cards(players, game_id)
 
     # Start the game
     print("Starting a new game...")
+    
+    # Get endpoint for server to process broadcast
     broadcast("The game is starting!")
-    update_game_state(game_id, STATE_PROGRESS)
+    
+     # Update the game state
+    first_player_id = players[0]['id']
+    start_game(game_id, first_player_id)
+
     
     # Step 2: Deal cards to players
     hands = deal_cards(players, game_id)
@@ -102,12 +89,12 @@ def game_loop():
         
         # Step 3.3: Handle action
         if action == ACTION_FOLD:
-            broadcast_game_message(f"Player {current_player_id} has folded.")
+            broadcast(f"Player {current_player_id} has folded.")
             # In a real game, you'd remove the player from the active pool
         elif action == ACTION_BET:
-            broadcast_game_message(f"Player {current_player_id} has placed a bet.")
+            broadcast(f"Player {current_player_id} has placed a bet.")
         elif action == ACTION_CALL:
-            broadcast_game_message(f"Player {current_player_id} has called the bet.")
+            broadcast(f"Player {current_player_id} has called the bet.")
         
         # Step 3.4: Check if all players have completed their actions
         # (for simplicity, we assume that after each player's turn, everyone acts)

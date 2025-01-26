@@ -3,9 +3,10 @@ import sqlite3
 DB_NAME = "clients.db"
 
 def setup_database():
-    """Create the clients table if it doesn't already exist."""
+    """Create the clients tables if it doesn't already exist."""
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
+    
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS players (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -13,6 +14,7 @@ def setup_database():
             department TEXT NOT NULL
         )
     ''')
+    conn.commit()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS games (
             game_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,6 +23,7 @@ def setup_database():
             winner_id INTEGER  -- Points to the winning playerc
             )
     ''')
+    conn.commit()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS hands (
             hand_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,8 +34,7 @@ def setup_database():
             FOREIGN KEY(game_id) REFERENCES games(game_id),
             FOREIGN KEY(player_id) REFERENCES players(id)
         )
-    ''')
-    
+    ''')    
     conn.commit()
     conn.close()
 
@@ -46,6 +48,8 @@ def setup_database():
 #     conn.close()
 #     return client_id
 
+
+#GameLoop database querries
 def get_all_players():
     conn = sqlite3.connect('client.db')
     cursor = conn.cursor()
@@ -57,15 +61,9 @@ def get_all_players():
 def get_player_by_id(client_id):
     """Retrieve client information from the database by ID."""
     conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    
-    print(f"DB LOG: CLIENT_ID: {client_id}")
-    
+    cursor = conn.cursor()    
     cursor.execute('SELECT id, name, department FROM clients WHERE id = ?', (client_id,))
     client = cursor.fetchone()
-    
-    print(f"DB LOG: CLIENT: {client}")
-    
     conn.close()
     return client
 
@@ -87,7 +85,7 @@ def get_current_player(game_id):
     conn.close()
     return state
     
-
+#Game menagment and initalizers within database
 def add_new_game():
     conn = sqlite3.connect('client.db')
     cursor = conn.cursor()
@@ -109,3 +107,11 @@ def update_game_state(game_id, game_state):
     cursor.execute('UPDATE games SET state = ? WHERE game_id = ?', (game_state, game_id))
     conn.commit()
     conn.close()
+
+def get_latest_game_id():
+    conn = sqlite3.connect('client.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT game_id FROM games ORDER BY game_id DESC LIMIT 1')
+    game_id = cursor.fetchone()[0]
+    conn.close()
+    return game_id
