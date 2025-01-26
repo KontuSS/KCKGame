@@ -69,6 +69,25 @@ def get_player_by_id(client_id):
     conn.close()
     return client
 
+def get_game_state(game_id):
+    """Retrieve game information from the database by ID."""
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()    
+    cursor.execute('SELECT state FROM games WHERE game_id = ?', (game_id,))
+    state = cursor.fetchone()    
+    conn.close()
+    return state
+
+def get_current_player(game_id):
+    """Retrieve current player from the database by game ID."""
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()    
+    cursor.execute('SELECT current_player_id FROM games WHERE game_id = ?', (game_id,))
+    state = cursor.fetchone()    
+    conn.close()
+    return state
+    
+
 def add_new_game():
     conn = sqlite3.connect('client.db')
     cursor = conn.cursor()
@@ -81,5 +100,12 @@ def start_game(game_id, first_player_id):
     cursor = conn.cursor()
     cursor.execute('UPDATE games SET state = ?, current_player_id = ? WHERE game_id = ?',
                    ('in-progress', first_player_id, game_id))
+    conn.commit()
+    conn.close()
+    
+def update_game_state(game_id, game_state):
+    conn = sqlite3.connect('client.db')
+    cursor = conn.cursor()
+    cursor.execute('UPDATE games SET state = ? WHERE game_id = ?', (game_state, game_id))
     conn.commit()
     conn.close()

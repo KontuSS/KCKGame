@@ -10,6 +10,11 @@ if project_root not in sys.path:
 from database.server_db import *
 from database.client_db import *
 
+# Defines
+STATE_WAITING = "waiting"
+STATE_PROGRESS = "in-progress"
+STATE_FINISHED = "finished"
+
 # Card Deck
 SUITS = ['H', 'D', 'C', 'S']
 RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
@@ -75,8 +80,8 @@ def game_loop():
 
     # Start the game
     print("Starting a new game...")
-    broadcast_game_message("The game is starting!")
-    update_game_state(game_id, STATE_IN_PROGRESS)
+    broadcast("The game is starting!")
+    update_game_state(game_id, STATE_PROGRESS)
     
     # Step 2: Deal cards to players
     hands = deal_cards(players, game_id)
