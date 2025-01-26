@@ -31,7 +31,7 @@ def handle_client(client, address):
     client_id = client.recv(1024).decode('utf-8')
         
     # Retrieve client information from the database
-    client_info = get_client_from_db(client_id)
+    client_info = get_player_by_id(client_id)
     
     if client_info:
         client.sendall(f"Welcome {client_info[1]} from {client_info[2]} department!".encode('utf-8'))

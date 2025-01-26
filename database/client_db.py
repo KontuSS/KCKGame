@@ -16,6 +16,22 @@ def generate_client_info():
     conn.close()
     return client_id, name, department
 
+def save_hand(game_id, player_id, cards, hand_strength):
+    conn = sqlite3.connect('client.db')
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO hands (game_id, player_id, cards, hand_strength) VALUES (?, ?, ?, ?)',
+                   (game_id, player_id, cards, hand_strength))
+    conn.commit()
+    conn.close()
+    
+def save_hand(game_id, player_id, cards, hand_strength):
+    conn = sqlite3.connect('client.db')
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO hands (game_id, player_id, cards, hand_strength) VALUES (?, ?, ?, ?)',
+                   (game_id, player_id, cards, hand_strength))
+    conn.commit()
+    conn.close()
+
 # def get_client_info():
 #     """Retrieve the client's information from the local database."""
 #     conn = sqlite3.connect(DB_NAME)
