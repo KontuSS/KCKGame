@@ -12,6 +12,7 @@ def setup_database():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             department TEXT NOT NULL
+            action INTEGER
         )
     ''')
     conn.commit()
@@ -62,7 +63,7 @@ def get_player_by_id(client_id):
     """Retrieve client information from the database by ID."""
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()    
-    cursor.execute('SELECT id, name, department FROM clients WHERE id = ?', (client_id,))
+    cursor.execute('SELECT id, name, department FROM players WHERE id = ?', (client_id,))
     client = cursor.fetchone()
     conn.close()
     return client
@@ -115,3 +116,20 @@ def get_latest_game_id():
     game_id = cursor.fetchone()[0]
     conn.close()
     return game_id
+
+# Player managment querries
+
+def get_player_state(player_id):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()    
+    cursor.execute('SELECT action FROM players WHERE id = ?', (player_id,))
+    client = cursor.fetchone()
+    conn.close()
+    return client
+
+def set_player_state(player_id, action_type):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()    
+    cursor.execute('UPDATE players SET action = ? WHERE id = ?', (action_type, player_id))
+    conn.commit()
+    conn.close()  

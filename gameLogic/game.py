@@ -10,6 +10,13 @@ if project_root not in sys.path:
 from database.server_db import *
 from database.client_db import *
 
+# Action types
+ACTION_BET = 1
+ACTION_CALL = 2
+ACTION_CHECK = 3
+ACTION_FOLD = 4
+ACTION_AWAIT = 5
+
 # Defines
 STATE_WAITING = "waiting"
 STATE_PROGRESS = "in-progress"
@@ -45,6 +52,20 @@ def evaluate_hand(hand):
     else:
         return "High Card"
 
+def player_action(player_id, action_type):
+    set_player_state(player_id, action_type)
+    #define what it does further
+
+    return action_type
+
+
+def check_players_status(players):
+    for player in enumerate(players):
+        current_action = get_player_state(player['id'])
+        if current_action == 5:
+            return False
+
+
 #template game loop, need to link to db and server action
 def game_loop():
     # Step 1: Add the game to the database
@@ -71,7 +92,7 @@ def game_loop():
 
     
     # Step 2: Deal cards to players
-    hands = deal_cards(players, game_id)
+    deal_cards(players, game_id)
 
     # Step 3: Main game loop
     while True:
@@ -97,8 +118,9 @@ def game_loop():
             broadcast(f"Player {current_player_id} has called the bet.")
         
         # Step 3.4: Check if all players have completed their actions
-        # (for simplicity, we assume that after each player's turn, everyone acts)
-        # Here you can check if all players have folded or called, or if a winner is determined.
+        while True:
+            if (check_players_status(players)):
+                break
         
         # Simulating next player turn
         time.sleep(1)  # Pause to simulate real-time game
@@ -106,11 +128,6 @@ def game_loop():
         # For this example, just rotate between players
         next_player = (current_player_id % len(players)) + 1
         print(f"Next player is {next_player}")
-        
-        # Example: Game ends when players have finished their turns
-        if all([True for _ in players]):  # Replace with actual check
-            update_game_state(game_id, STATE_FINISHED)
-            break
     
     # Step 4: Determine winner based on hands
     print("Game Over!")
