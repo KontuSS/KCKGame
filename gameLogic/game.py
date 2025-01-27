@@ -2,6 +2,19 @@ import random
 import sys
 import os
 
+# NAJWAŻNIEJSZE TODO
+
+# 1. Wystawić server zeby mozna było wysyłać z niego requesty i broadcasty
+# Ad. 1 pomysł: dać w serverze wątek na stałe śledzenie tabeli 'game' i wysyłanie requestów i broadcastów zaleznie od
+# zmiany w danej krotce
+
+# 2. Zrobić test na wszystkie zapytania do bazy danych czy wszystko jest git
+
+# 3. Zasymulować odpalenie na różnych komputerach
+
+# 4.* Przerobienie/Dorobienie obiektowości i zrobienie z player/server/obsłui klas z metodami i atrybutami
+# *Nie wiadomo czy potrzebne może sie przyda
+
 # Add the project root directory to sys.path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if project_root not in sys.path:
@@ -119,6 +132,7 @@ def game_loop():
         
         # Step 3.4: Check if all players have completed their actions
         while True:
+            # Myśle ze to bardziej ze strony serwerowej request do klienta powinien być
             if (check_players_status(players)):
                 break
         
