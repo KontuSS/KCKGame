@@ -1,6 +1,6 @@
 import sqlite3
 
-DB_NAME = "clients.db"
+DB_NAME = "game.db"
 
 def setup_database():
     """Create the clients tables if it doesn't already exist."""

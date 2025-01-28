@@ -136,6 +136,7 @@ def process_player_action(action, current_player_socket, current_player_id, betA
 #template game loop, need to link to db and server action
 def game_loop():
     while len(clientsID)<2:
+        time.sleep(2)
         pass
     
     DECK = [f"{rank}{suit}" for suit in SUITS for rank in RANKS]

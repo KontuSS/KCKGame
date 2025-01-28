@@ -1,6 +1,6 @@
 import sqlite3
 
-DB_NAME = "clients.db"
+DB_NAME = "game.db"
 
 def generate_client_info():
     """Generate client information and store it locally."""
