@@ -25,18 +25,19 @@ if project_root not in sys.path:
 from database.server_db import *
 from database.client_db import *
 from server.server import broadcast, clients
+from enum import Enum
 
-# Action types
-ACTION_BET = 1
-ACTION_CALL = 2
-ACTION_CHECK = 3
-ACTION_FOLD = 4
-ACTION_AWAIT = 5
+class PlayerActions(Enum):
+    BET = 1
+    CALL = 2
+    CHECK = 3
+    FOLD = 4
+    AWAIT = 5
 
-# Defines
-STATE_STARTING = "starting"
-STATE_PROGRESS = "in-progress"
-STATE_FINISHED = "finished"
+class GameState(Enum):
+    STARTING = "starting"
+    PROGRESS = "in-progress"
+    FINISHED = "finished"
 
 # Card Deck
 SUITS = ['H', 'D', 'C', 'S']
