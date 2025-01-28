@@ -25,8 +25,9 @@ def broadcast(message, exclude_client=None):
 
 def handle_client(client, address):
     """Handle communication with an individual client."""
-    print(f"New connection: {address}")
-
+    print(f"New connection: {address}")    
+    clients.append(client)
+    
     # Receive client's ID
     client_id = client.recv(1024).decode('utf-8')
         

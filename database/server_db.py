@@ -11,11 +11,13 @@ def setup_database():
         CREATE TABLE IF NOT EXISTS players (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
-            department TEXT NOT NULL
-            action INTEGER
+            department TEXT NOT NULL,
+            action INTEGER,
+            address TEXT NOT NULL
         )
     ''')
     conn.commit()
+    
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS games (
             game_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,6 +27,7 @@ def setup_database():
             )
     ''')
     conn.commit()
+    
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS hands (
             hand_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,6 +40,7 @@ def setup_database():
         )
     ''')    
     conn.commit()
+    
     conn.close()
 
 # def add_client_to_db(name, department):
@@ -90,7 +94,7 @@ def get_current_player(game_id):
 def add_new_game():
     conn = sqlite3.connect('client.db')
     cursor = conn.cursor()
-    cursor.execute('INSERT INTO games (state) VALUES (?)', ('waiting',))
+    cursor.execute('INSERT INTO games (state) VALUES (?)', ('starting',))
     conn.commit()
     conn.close()
 

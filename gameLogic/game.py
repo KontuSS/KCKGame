@@ -5,6 +5,7 @@ import os
 # NAJWAŻNIEJSZE TODO
 
 # 1. Wystawić server zeby mozna było wysyłać z niego requesty i broadcasty
+
 # Ad. 1 pomysł: dać w serverze wątek na stałe śledzenie tabeli 'game' i wysyłanie requestów i broadcastów zaleznie od
 # zmiany w danej krotce
 
@@ -12,7 +13,7 @@ import os
 
 # 3. Zasymulować odpalenie na różnych komputerach
 
-# 4.* Przerobienie/Dorobienie obiektowości i zrobienie z player/server/obsłui klas z metodami i atrybutami
+# 4.* Przerobienie/Dorobienie obiektowości i zrobienie z player/server/obsługi klas z metodami i atrybutami
 # *Nie wiadomo czy potrzebne może sie przyda
 
 # Add the project root directory to sys.path
@@ -22,6 +23,7 @@ if project_root not in sys.path:
 
 from database.server_db import *
 from database.client_db import *
+from server.server import broadcast, clients
 
 # Action types
 ACTION_BET = 1
@@ -31,7 +33,7 @@ ACTION_FOLD = 4
 ACTION_AWAIT = 5
 
 # Defines
-STATE_WAITING = "waiting"
+STATE_STARTING = "starting"
 STATE_PROGRESS = "in-progress"
 STATE_FINISHED = "finished"
 
@@ -81,38 +83,31 @@ def check_players_status(players):
 
 #template game loop, need to link to db and server action
 def game_loop():
-    # Step 1: Add the game to the database
+    
+    # Prepare game
+    
+    # Add starting state to DB
     add_new_game()
-
-    # Step 2: Retrieve game_id from database
+    # It created new gameID, fetch this ID
     game_id = get_latest_game_id()
-
-    # Step 3: Get all current players from database
-    players = get_all_players()
-
-    # Step 4: Deal cards to players
-    deal_cards(players, game_id)
-
-    # Start the game
+    # Fetch all currently connected players
+    players = get_all_clients()
+    
     print("Starting a new game...")
-    
-    # Get endpoint for server to process broadcast
     broadcast("The game is starting!")
-    
-     # Update the game state
+    # Set first player ID
     first_player_id = players[0]['id']
+    # Modify games table in DB
     start_game(game_id, first_player_id)
-
     
-    # Step 2: Deal cards to players
-    deal_cards(players, game_id)
-
-    # Step 3: Main game loop
     while True:
         game_state = get_game_state(game_id)
         
         if game_state == STATE_FINISHED:
             break  # End the game if it's finished
+        
+        # Deal cards to all current players
+        deal_cards(players, game_id)
         
         # Step 3.1: Get current player
         current_player_id = get_current_player(game_id)
@@ -120,6 +115,11 @@ def game_loop():
         
         # Step 3.2: Simulate player action (e.g., fold, bet, call)
         action = player_action(current_player_id, ACTION_BET)  # Example: player bets
+        
+        while True: 
+            # Listen to player broadcast
+            
+            break
         
         # Step 3.3: Handle action
         if action == ACTION_FOLD:
@@ -151,4 +151,5 @@ def game_loop():
     
 # Running the main game loop
 if __name__ == '__main__':
-    game_loop()
+    if clients >= 2:
+        game_loop()
