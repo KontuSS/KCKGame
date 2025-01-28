@@ -64,6 +64,7 @@ def start_server():
 
     try:
         while True:
+            # .accept() listens for new clients
             client, address = server.accept()
             threading.Thread(target=handle_client, args=(client, address)).start()
     except KeyboardInterrupt:

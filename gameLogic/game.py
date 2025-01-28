@@ -1,6 +1,7 @@
 import random
 import sys
 import os
+import socket
 
 # NAJWAŻNIEJSZE TODO
 
@@ -100,53 +101,46 @@ def game_loop():
     # Modify games table in DB
     start_game(game_id, first_player_id)
     
+    deal_cards(players, game_id)
+    
+    #MAIN GAME LOOP \/
     while True:
         game_state = get_game_state(game_id)
-        
         if game_state == STATE_FINISHED:
-            break  # End the game if it's finished
-        
-        # Deal cards to all current players
-        deal_cards(players, game_id)
-        
-        # Step 3.1: Get current player
-        current_player_id = get_current_player(game_id)
-        print(f"Player {current_player_id}'s turn")
-        
-        # Step 3.2: Simulate player action (e.g., fold, bet, call)
-        action = player_action(current_player_id, ACTION_BET)  # Example: player bets
-        
-        while True: 
-            # Listen to player broadcast
+                break        
+        deal_cards_on_table(game_state)
+        #TRUN LOOP
+        while True:                   
+            current_player_socket = clients[0]
+            current_player_id = get_current_player(game_id)        
+            broadcast(f"Player {current_player_id}'s turn")
             
-            break
-        
-        # Step 3.3: Handle action
-        if action == ACTION_FOLD:
-            broadcast(f"Player {current_player_id} has folded.")
-            # In a real game, you'd remove the player from the active pool
-        elif action == ACTION_BET:
-            broadcast(f"Player {current_player_id} has placed a bet.")
-        elif action == ACTION_CALL:
-            broadcast(f"Player {current_player_id} has called the bet.")
-        
-        # Step 3.4: Check if all players have completed their actions
-        while True:
-            # Myśle ze to bardziej ze strony serwerowej request do klienta powinien być
-            if (check_players_status(players)):
-                break
-        
-        # Simulating next player turn
-        time.sleep(1)  # Pause to simulate real-time game
+            # PLAYER ACTIONS IN TURN LOOP       
+            while True:
+                # Listen to player action
+                action = current_player_socket.client.recv(1024).decode('utf-8')
+                
+                if action == ACTION_FOLD:
+                    broadcast(f"Player {current_player_id} has folded.")
+                    break
+                elif action == ACTION_BET:
+                    broadcast(f"Player {current_player_id} has placed a bet.")
+                    break
+                elif action == ACTION_CALL:
+                    broadcast(f"Player {current_player_id} has called the bet.")
+                    break
 
-        # For this example, just rotate between players
-        next_player = (current_player_id % len(players)) + 1
-        print(f"Next player is {next_player}")
+            # KALKULACJE PULI / WARTOSCI / SIŁY KART GRACZY
+
+            # For this example, just rotate between players
+            next_player = (current_player_id % len(players)) + 1
+            set_next_player(next_player)
+            
+            #if when all players will do sth then break
+            
+        #game state update then continue with next turn
+        
     
-    # Step 4: Determine winner based on hands
-    print("Game Over!")
-    winner_id = 1  # Simulated winner ID for example
-    print(f"Player {winner_id} wins the game!")
     
     
 # Running the main game loop

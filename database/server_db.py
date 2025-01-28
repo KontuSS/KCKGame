@@ -137,3 +137,6 @@ def set_player_state(player_id, action_type):
     cursor.execute('UPDATE players SET action = ? WHERE id = ?', (action_type, player_id))
     conn.commit()
     conn.close()  
+    
+def set_next_player(player_id):
+    return 1
