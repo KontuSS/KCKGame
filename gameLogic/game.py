@@ -53,12 +53,17 @@ DECK = [f"{rank}{suit}" for suit in SUITS for rank in RANKS]
 
 random.shuffle(DECK)
 
+# Function to obtain single card from deck and remove it from deck
+def get_single_card():
+    card = DECK.pop()
+    return card
+
 # Deal cards to players
 def deal_cards(players, game_id):
 
     # Assign 2 cards to each player
     for i, player in enumerate(players):
-        hand = ', '.join(deck[i*2:i*2+2])  # Deal 2 cards per player
+        hand = ', '.join([get_single_card(), get_single_card()])  # Deal 2 cards per player
         hand_strength = evaluate_hand(hand)
         save_hand(game_id, player['id'], hand, hand_strength)
 
@@ -157,12 +162,4 @@ def game_loop():
             
             #if when all players will do sth then break
             
-        #game state update then continue with next turn
-        
-    
-    
-    
-# Running the main game loop
-if __name__ == '__main__':
-    if clients >= 2:
-        game_loop()
+        #game state upda
