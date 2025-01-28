@@ -26,7 +26,7 @@ if project_root not in sys.path:
 
 from database.server_db import *
 from database.client_db import *
-from server.server import broadcast, start_server, clients
+from server.server import broadcast, start_server, clients, clientsID
 from enum import Enum
 
 class PlayerActions(Enum):
@@ -64,10 +64,10 @@ def get_single_card():
 def deal_cards(players, game_id):
 
     # Assign 2 cards to each player
-    for i, player in enumerate(players):
+    for player in players:
         hand = ', '.join([get_single_card(), get_single_card()])  # Deal 2 cards per player
         hand_strength = evaluate_hand(hand)
-        save_hand(game_id, player['id'], hand, hand_strength)
+        save_hand(game_id, player, hand, hand_strength)
 
 # Evaluate hand strength (simple logic for now)
 def evaluate_hand(hand):
@@ -90,8 +90,8 @@ def player_action(player_id, action_type):
 
 
 def check_players_status(players):
-    for player in enumerate(players):
-        current_action = get_player_state(player['id'])
+    for i in players:
+        current_action = get_player_state(players[i])
         if current_action == 5:
             return False
 
@@ -129,7 +129,9 @@ def process_player_action(action, current_player_socket, current_player_id, betA
 
 #template game loop, need to link to db and server action
 def game_loop():
-    time.sleep(5)
+    while len(clientsID)<1:
+        pass
+    
     print('starting main game loop') 
 
     # Prepare game
@@ -139,12 +141,12 @@ def game_loop():
     # It created new gameID, fetch this ID
     game_id = get_latest_game_id()
     # Fetch all currently connected players
-    players = []
+    players = clientsID
     
     #print("Starting a new game...")
     broadcast("The game is starting!")
     # Set first player ID
-    first_player_id = players[0]['id']
+    first_player_id = players[0]
     # Modify games table in DB
     start_game(game_id, first_player_id)
     

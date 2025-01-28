@@ -16,6 +16,7 @@ PORT = 12345
 
 # Networking
 clients = []
+clientsID = []
 
 def broadcast(message, exclude_client=None):
     """Send a message to all clients except the sender."""
@@ -30,7 +31,8 @@ def handle_client(client, address):
     
     # Receive client's ID
     client_id = client.recv(1024).decode('utf-8')
-        
+    clientsID.append(client_id)
+    
     # Retrieve client information from the database
     client_info = get_player_by_id(client_id)
     
@@ -51,6 +53,7 @@ def handle_client(client, address):
         print(f"Client {address} disconnected abruptly.")
     finally:
         clients.remove(client)
+        clientsID.remove(client_id)
         client.close()
         print(f"Connection with {address} closed.")
 
