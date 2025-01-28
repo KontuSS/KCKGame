@@ -35,20 +35,26 @@ class PlayerActions(Enum):
     AWAIT = 5
 
 class GameState(Enum):
-    STARTING = "starting"
-    PROGRESS = "in-progress"
-    FINISHED = "finished"
+    STARTING = 1
+    PROGRESS = 2
+    
+    TURN1 = 3
+    TURN2 = 4
+    TURN3 = 5
+    TURN4 = 6
+    
+    FINISHED = 7
 
 # Card Deck
 SUITS = ['H', 'D', 'C', 'S']
 RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 
-DECK = [f"{rank} of {suit}" for suit in SUITS for rank in RANKS]
+DECK = [f"{rank}{suit}" for suit in SUITS for rank in RANKS]
+
+random.shuffle(DECK)
 
 # Deal cards to players
 def deal_cards(players, game_id):
-    deck = DECK.copy()
-    random.shuffle(deck)
 
     # Assign 2 cards to each player
     for i, player in enumerate(players):
@@ -83,6 +89,16 @@ def check_players_status(players):
             return False
 
 
+def deal_cards_on_table(game_state, table_hand):
+    if game_state == GameState.TURN1:
+        return
+    elif game_state == GameState.TURN2:
+        table_hand += ', '.join(DECK[0:3])  # Deal 3 cards on table
+    elif game_state == GameState.TURN3:
+        table_hand += ', '.join(DECK[0:1]) # Deal 1 cards on table
+    elif game_state == GameState.TURN4:
+        table_hand += ', '.join(DECK[0:1]) # Deal 1 cards on table
+
 #template game loop, need to link to db and server action
 def game_loop():
     
@@ -107,7 +123,7 @@ def game_loop():
     #MAIN GAME LOOP \/
     while True:
         game_state = get_game_state(game_id)
-        if game_state == STATE_FINISHED:
+        if game_state == GameState.FINISHED:
                 break        
         deal_cards_on_table(game_state)
         #TRUN LOOP
@@ -121,15 +137,17 @@ def game_loop():
                 # Listen to player action
                 action = current_player_socket.client.recv(1024).decode('utf-8')
                 
-                if action == ACTION_FOLD:
+                if action == PlayerActions.FOLD:
                     broadcast(f"Player {current_player_id} has folded.")
                     break
-                elif action == ACTION_BET:
+                elif action == PlayerActions.BET:
                     broadcast(f"Player {current_player_id} has placed a bet.")
                     break
-                elif action == ACTION_CALL:
+                elif action == PlayerActions.CALL:
                     broadcast(f"Player {current_player_id} has called the bet.")
                     break
+                elif action == PlayerActions.CHECK:
+                    
 
             # KALKULACJE PULI / WARTOSCI / SIŁY KART GRACZY
 
