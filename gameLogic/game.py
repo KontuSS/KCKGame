@@ -30,22 +30,22 @@ from server.server import broadcast, start_server, clients, clientsID
 from enum import Enum
 
 class PlayerActions(Enum):
-    BET = 1
-    CALL = 2
-    CHECK = 3
-    FOLD = 4
-    AWAIT = 5
+    BET = '1'
+    CALL = '2'
+    CHECK = '3'
+    FOLD = '4'
+    AWAIT = '5'
 
 class GameState(Enum):
     STARTING = 1
     PROGRESS = 2
     
-    TURN1 = '3'
-    TURN2 = '4'
-    TURN3 = '5'
-    TURN4 = '6'
+    TURN1 = 3
+    TURN2 = 4
+    TURN3 = 5
+    TURN4 = 6
     
-    FINISHED = '7'
+    FINISHED = 7
 
 # Card Deck
 SUITS = ['H', 'D', 'C', 'S']
@@ -112,25 +112,21 @@ def deal_cards_on_table(game_state, table_hand):
 
 def process_player_action(action, current_player_socket, current_player_id, betAmount, game_id):
     if action == PlayerActions.CHECK.value:
-        print("player action check")
         broadcast(f"Player {current_player_id} has checked.")
         return True
     
     elif action == PlayerActions.FOLD.value:
-        print("player action fold")
         broadcast(f"Player {current_player_id} has folded.")
         player_fold(current_player_id)
         return True
     
     elif action == PlayerActions.BET.value:
-        print("player action bet")
-        broadcast(f"Player {current_player_id} has checked.")
+        broadcast(f"Player {current_player_id} has betted.")
         player_bet(current_player_id, game_id, betAmount)
         return True
     
     elif action == PlayerActions.CALL.value:
-        print("player action call")
-        broadcast(f"Player {current_player_id} has checked.")
+        broadcast(f"Player {current_player_id} has called.")
         player_call(current_player_id, game_id)
         return True
     else:
@@ -145,9 +141,7 @@ def game_loop():
     DECK = [f"{rank}{suit}" for suit in SUITS for rank in RANKS]
     random.shuffle(DECK)
     
-    print('starting main game loop') 
-
-    # Prepare game
+    print("Game is starting!")
     
     # Add starting state to DB
     add_new_game()
@@ -178,17 +172,17 @@ def game_loop():
                 break        
         print(f"game state: {game_state}")
         table_hand = deal_cards_on_table(game_state[0], table_hand)
-        print(f"table hand: {table_hand}")
+        print(f"Cards on table: {table_hand}")
         #TRUN LOOP
         while True:                   
-            current_player_socket = clients[0]
+            current_player_socket = clients[playerTurn]
             current_player_id = get_current_player(game_id)
-            print(f"Player {current_player_id[0]}'s turn")
+            print(f"Player ID:{current_player_id[0]} turn")
             broadcast(f"Player {current_player_id[0]}'s turn")
             
             # PLAYER ACTIONS IN TURN LOOP       
             # Listen to player action
-            print("Listetning to player action")
+            #print("Listetning to player action")
             action = str(current_player_socket.recv(1024).decode('utf-8'))
                 # :fold
                 # :bet x
@@ -196,13 +190,16 @@ def game_loop():
                 # :check
             try:
                 betAmount = action.split(" ")[1]
+                action = action.split(" ")[0]
+                print(f"Bet amout: {betAmount}")
             except:
                 betAmount = 0
                 
-            print(f"Action type: {action}")
+                    
+            print(f"Player Action: {action}") 
+            
                 
-            process_player_action(int(action), current_player_socket, current_player_id, betAmount, game_id)
-            print("Player action end")
+            process_player_action(action, current_player_socket, current_player_id[0], betAmount, game_id)
 
             # For this example, just rotate between players
             playerTurn+=1
@@ -210,11 +207,14 @@ def game_loop():
                 playerTurn=0
             next_player = players[playerTurn]
             
-            print(f"next player: {next_player}")
+            #print(f"next player: {next_player}")
             if next_player==first_player_id: break            
             set_next_player(next_player, game_id)
+        # After turn
         DEVELOP_game_state+=1
         update_game_state(game_id, DEVELOP_game_state)
+        ectsPool = get_ectsPool(game_id)
+        print(f"Current ects pool: {ectsPool}")
         
     print("Game ended, start new game!")
             

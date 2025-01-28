@@ -6,11 +6,12 @@ def generate_client_info():
     """Generate client information and store it locally."""
     name = input("Enter your name: ")
     department = input("Enter your department: ")
+    ectsPool = int(input("Enter your ects pool: "))
 
     # Store in local database
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute('INSERT INTO players (name, department) VALUES (?, ?)', (name, department))
+    cursor.execute('INSERT INTO players (name, department, ectsPool) VALUES (?, ?, ?)', (name, department, ectsPool))
     conn.commit()
     client_id = cursor.lastrowid
     conn.close()

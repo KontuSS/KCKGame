@@ -13,7 +13,6 @@ def setup_database():
             name TEXT NOT NULL,
             department TEXT NOT NULL,
             action INTEGER,
-            address TEXT NOT NULL,
             state INTEGER, --playing:0 , folded:1,
             ectsPool INTEGER
         )
@@ -107,8 +106,8 @@ def add_new_game():
 def start_game(game_id, first_player_id):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute('UPDATE games SET state = ?, current_player_id = ? WHERE game_id = ?',
-                   (3, first_player_id, game_id))
+    cursor.execute('UPDATE games SET state = ?, current_player_id = ?, turnPool = ?, currentBet = ? WHERE game_id = ?',
+                   (3, first_player_id, 0, 0, game_id))
     conn.commit()
     conn.close()
     
@@ -126,6 +125,15 @@ def get_latest_game_id():
     game_id = cursor.fetchone()[0]
     conn.close()
     return game_id
+
+def get_ectsPool(gameId):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute('SELECT turnPool FROM games WHERE game_id = ?', (gameId,))
+    game_id = cursor.fetchone()
+    conn.close()
+    return game_id
+
 
 # Player managment querries
 
@@ -147,7 +155,7 @@ def set_player_state(player_id, action_type):
 def set_next_player(player_id, game_id):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()    
-    cursor.execute('UPDATE games SET current_player_id = ? WHERE id = ?', (player_id, game_id))
+    cursor.execute('UPDATE games SET current_player_id = ? WHERE game_id = ?', (player_id, game_id))
     conn.commit()
     conn.close()  
 
@@ -161,21 +169,21 @@ def player_fold(player_id):
 def player_bet(player_id, game_id, betAmmout):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute('SELECT ectsPool from players WHERE id=?',(player_id,))
-    ectsPool = cursor.fetchone()
-    ectsPool -= betAmmout
+    cursor.execute('SELECT ectsPool from players WHERE id=?', (player_id,))
+    ectsPool = cursor.fetchone()[0]
+    ectsPool -= int(betAmmout)
     
     cursor.execute('UPDATE players SET ectsPool = ? WHERE id = ?', (ectsPool, player_id))
     conn.commit()
         
-    cursor.execute('UPDATE games SET currentBet = ? WHERE id = ?', (betAmmout, game_id))
+    cursor.execute('UPDATE games SET currentBet = ? WHERE game_id = ?', (betAmmout, game_id))
     conn.commit()
     
-    cursor.execute('SELECT turnPool from games WHERE id=?',(game_id,))
-    turnPool = cursor.fetchone()
-    turnPool += betAmmout
+    cursor.execute('SELECT turnPool from games WHERE game_id=?',(game_id,))
+    turnPool = cursor.fetchone()[0]
+    turnPool += int(betAmmout)
     
-    cursor.execute('UPDATE games SET turnPool = ? WHERE id = ?', (turnPool, game_id))
+    cursor.execute('UPDATE games SET turnPool = ? WHERE game_id = ?', (turnPool, game_id))
     conn.commit()
     
     conn.close()
@@ -184,20 +192,20 @@ def player_call(player_id, game_id):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     cursor.execute('SELECT ectsPool from players WHERE id=?',(player_id,))
-    ectsPool = cursor.fetchone()
+    ectsPool = cursor.fetchone()[0]
     
-    cursor.execute('SELECT currentBet from games WHERE id=?',(game_id,))
-    currentBet = cursor.fetchone()
-    
+    cursor.execute('SELECT currentBet from games WHERE game_id=?',(game_id,))
+    currentBet = cursor.fetchone()[0]    
     ectsPool -= currentBet
+    
     cursor.execute('UPDATE players SET ectsPool = ? WHERE id = ?', (ectsPool, player_id))
     conn.commit()  
     
-    cursor.execute('SELECT turnPool from games WHERE id=?',(game_id,))
-    turnPool = cursor.fetchone()
+    cursor.execute('SELECT turnPool from games WHERE game_id=?',(game_id,))
+    turnPool = cursor.fetchone()[0]
     turnPool += currentBet    
     
-    cursor.execute('UPDATE games SET turnPool = ? WHERE id = ?', (turnPool, game_id))
+    cursor.execute('UPDATE games SET turnPool = ? WHERE game_id = ?', (turnPool, game_id))
     conn.commit()
     
     conn.close()
