@@ -98,11 +98,32 @@ def deal_cards_on_table(game_state, table_hand):
     if game_state == GameState.TURN1:
         return
     elif game_state == GameState.TURN2:
-        table_hand += ', '.join(DECK[0:3])  # Deal 3 cards on table
+        table_hand += ', '.join([get_single_card(), get_single_card(), get_single_card()])  # Deal 3 cards on table
     elif game_state == GameState.TURN3:
-        table_hand += ', '.join(DECK[0:1]) # Deal 1 cards on table
+        table_hand += ', '.join([get_single_card()]) # Deal 1 cards on table
     elif game_state == GameState.TURN4:
-        table_hand += ', '.join(DECK[0:1]) # Deal 1 cards on table
+        table_hand += ', '.join([get_single_card()]) # Deal 1 cards on table
+
+def process_player_action(action, current_player_socket, current_player_id, betAmount, game_id):
+    if action == PlayerActions.CHECK:
+        broadcast(f"Player {current_player_id} has checked.")
+        return True
+    
+    elif action == PlayerActions.FOLD:
+        broadcast(f"Player {current_player_id} has folded.")
+        player_fold(current_player_id)
+        return True
+    
+    elif action == PlayerActions.BET:
+        broadcast(f"Player {current_player_id} has checked.")
+        player_bet(current_player_id, game_id, betAmount)
+        return True
+    
+    elif action == PlayerActions.CALL:
+        broadcast(f"Player {current_player_id} has checked.")
+        player_call(current_player_id, game_id)
+        return True
+    
 
 #template game loop, need to link to db and server action
 def game_loop():
@@ -116,7 +137,7 @@ def game_loop():
     # Fetch all currently connected players
     players = get_all_clients()
     
-    print("Starting a new game...")
+    #print("Starting a new game...")
     broadcast("The game is starting!")
     # Set first player ID
     first_player_id = players[0]['id']
@@ -124,13 +145,13 @@ def game_loop():
     start_game(game_id, first_player_id)
     
     deal_cards(players, game_id)
-    
+    table_hand = []
     #MAIN GAME LOOP \/
     while True:
         game_state = get_game_state(game_id)
         if game_state == GameState.FINISHED:
                 break        
-        deal_cards_on_table(game_state)
+        deal_cards_on_table(game_state, table_hand)
         #TRUN LOOP
         while True:                   
             current_player_socket = clients[0]
@@ -140,18 +161,14 @@ def game_loop():
             # PLAYER ACTIONS IN TURN LOOP       
             while True:
                 # Listen to player action
-                action = current_player_socket.client.recv(1024).decode('utf-8')
-                
-                if action == PlayerActions.FOLD:
-                    broadcast(f"Player {current_player_id} has folded.")
+                action = str(current_player_socket.recv(1024).decode('utf-8'))
+                # :fold
+                # :bet x
+                # :call
+                # :check
+                betAmount = action.split(" ")[1]
+                if process_player_action(action, current_player_socket, current_player_id, betAmount, game_id):
                     break
-                elif action == PlayerActions.BET:
-                    broadcast(f"Player {current_player_id} has placed a bet.")
-                    break
-                elif action == PlayerActions.CALL:
-                    broadcast(f"Player {current_player_id} has called the bet.")
-                    break
-                elif action == PlayerActions.CHECK:
                     
 
             # KALKULACJE PULI / WARTOSCI / SIŁY KART GRACZY

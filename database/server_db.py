@@ -13,7 +13,9 @@ def setup_database():
             name TEXT NOT NULL,
             department TEXT NOT NULL,
             action INTEGER,
-            address TEXT NOT NULL
+            address TEXT NOT NULL,
+            state INTEGER, --playing:0 , folded:1
+            ectsPool INTEGER
         )
     ''')
     conn.commit()
@@ -24,6 +26,8 @@ def setup_database():
             state INTIGER NOT NULL,  -- 
             current_player_id INTEGER,  -- Points to player whos currently playing
             winner_id INTEGER  -- Points to the winning playerc
+            turnPool INTEGER,
+            currentBet INTEGER
             )
     ''')
     conn.commit()
@@ -140,3 +144,54 @@ def set_player_state(player_id, action_type):
     
 def set_next_player(player_id):
     return 1
+
+def player_fold(player_id):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute('UPDATE players SET state = ? WHERE id = ?', (1, player_id))
+    conn.commit()
+    conn.close()
+    
+def player_bet(player_id, game_id, betAmmout):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute('SELECT ectsPool from players WHERE id=?',(player_id,))
+    ectsPool = cursor.fetchone()
+    ectsPool -= betAmmout
+    
+    cursor.execute('UPDATE players SET ectsPool = ? WHERE id = ?', (ectsPool, player_id))
+    conn.commit()
+        
+    cursor.execute('UPDATE games SET currentBet = ? WHERE id = ?', (betAmmout, game_id))
+    conn.commit()
+    
+    cursor.execute('SELECT turnPool from games WHERE id=?',(game_id,))
+    turnPool = cursor.fetchone()
+    turnPool += betAmmout
+    
+    cursor.execute('UPDATE games SET turnPool = ? WHERE id = ?', (turnPool, game_id))
+    conn.commit()
+    
+    conn.close()
+    
+def player_call(player_id, game_id):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute('SELECT ectsPool from players WHERE id=?',(player_id,))
+    ectsPool = cursor.fetchone()
+    
+    cursor.execute('SELECT currentBet from games WHERE id=?',(game_id,))
+    currentBet = cursor.fetchone()
+    
+    ectsPool -= currentBet
+    cursor.execute('UPDATE players SET ectsPool = ? WHERE id = ?', (ectsPool, player_id))
+    conn.commit()  
+    
+    cursor.execute('SELECT turnPool from games WHERE id=?',(game_id,))
+    turnPool = cursor.fetchone()
+    turnPool += currentBet    
+    
+    cursor.execute('UPDATE games SET turnPool = ? WHERE id = ?', (turnPool, game_id))
+    conn.commit()
+    
+    conn.close()
