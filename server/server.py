@@ -19,10 +19,9 @@ clients = []
 clientsID = []
 
 def broadcast(message, exclude_client=None):
-    """Send a message to all clients except the sender."""
+    """Send a message to all clients."""
     for client in clients:
-        if client != exclude_client:
-            client.sendall(message.encode('utf-8'))
+        client.sendall(message.encode('utf-8'))
 
 def handle_client(client, address):
     """Handle communication with an individual client."""
@@ -43,12 +42,13 @@ def handle_client(client, address):
 
     try:
         while True:
-            message = client.recv(1024).decode('utf-8')
-            if not message:
-                break
+            # message = client.recv(1024).decode('utf-8')
+            # if not message:
+            #     break
 
-            print(f"Message from {address}: {message}")
-            broadcast(message, exclude_client=client)
+            # print(f"Message from {address}: {message}")
+            # broadcast(message, exclude_client=client)
+            pass
     except ConnectionResetError:
         print(f"Client {address} disconnected abruptly.")
     finally:

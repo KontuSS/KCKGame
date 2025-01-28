@@ -40,20 +40,20 @@ class GameState(Enum):
     STARTING = 1
     PROGRESS = 2
     
-    TURN1 = 3
-    TURN2 = 4
-    TURN3 = 5
-    TURN4 = 6
+    TURN1 = '3'
+    TURN2 = '4'
+    TURN3 = '5'
+    TURN4 = '6'
     
-    FINISHED = 7
+    FINISHED = '7'
 
 # Card Deck
 SUITS = ['H', 'D', 'C', 'S']
 RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 
 DECK = [f"{rank}{suit}" for suit in SUITS for rank in RANKS]
-
 random.shuffle(DECK)
+
 
 # Function to obtain single card from deck and remove it from deck
 def get_single_card():
@@ -66,6 +66,7 @@ def deal_cards(players, game_id):
     # Assign 2 cards to each player
     for player in players:
         hand = ', '.join([get_single_card(), get_single_card()])  # Deal 2 cards per player
+        print(f"Hand: {hand}")
         hand_strength = evaluate_hand(hand)
         save_hand(game_id, player, hand, hand_strength)
 
@@ -97,40 +98,52 @@ def check_players_status(players):
 
 
 def deal_cards_on_table(game_state, table_hand):
-    if game_state == GameState.TURN1:
-        return
-    elif game_state == GameState.TURN2:
-        table_hand += ', '.join([get_single_card(), get_single_card(), get_single_card()])  # Deal 3 cards on table
-    elif game_state == GameState.TURN3:
-        table_hand += ', '.join([get_single_card()]) # Deal 1 cards on table
-    elif game_state == GameState.TURN4:
-        table_hand += ', '.join([get_single_card()]) # Deal 1 cards on table
+    if game_state == GameState.TURN1.value:
+        return table_hand
+    elif game_state == GameState.TURN2.value:
+        table_hand = ', '.join([get_single_card(), get_single_card(), get_single_card()])
+    elif game_state == GameState.TURN3.value:
+        table_hand+=", "+get_single_card()
+    elif game_state == GameState.TURN4.value:
+        table_hand+=", "+get_single_card()
+    else:
+        print("Not valid game state type provided")        
+    return table_hand
 
 def process_player_action(action, current_player_socket, current_player_id, betAmount, game_id):
-    if action == PlayerActions.CHECK:
+    if action == PlayerActions.CHECK.value:
+        print("player action check")
         broadcast(f"Player {current_player_id} has checked.")
         return True
     
-    elif action == PlayerActions.FOLD:
+    elif action == PlayerActions.FOLD.value:
+        print("player action fold")
         broadcast(f"Player {current_player_id} has folded.")
         player_fold(current_player_id)
         return True
     
-    elif action == PlayerActions.BET:
+    elif action == PlayerActions.BET.value:
+        print("player action bet")
         broadcast(f"Player {current_player_id} has checked.")
         player_bet(current_player_id, game_id, betAmount)
         return True
     
-    elif action == PlayerActions.CALL:
+    elif action == PlayerActions.CALL.value:
+        print("player action call")
         broadcast(f"Player {current_player_id} has checked.")
         player_call(current_player_id, game_id)
         return True
+    else:
+        print("Not valid action type provided")
     
 
 #template game loop, need to link to db and server action
 def game_loop():
-    while len(clientsID)<1:
+    while len(clientsID)<2:
         pass
+    
+    DECK = [f"{rank}{suit}" for suit in SUITS for rank in RANKS]
+    random.shuffle(DECK)
     
     print('starting main game loop') 
 
@@ -140,50 +153,71 @@ def game_loop():
     add_new_game()
     # It created new gameID, fetch this ID
     game_id = get_latest_game_id()
+    print(f"GameID: {game_id}")
     # Fetch all currently connected players
     players = clientsID
+    playerCount = len(players)
+    playerTurn = 0
+    print(f"players table: {players}")
     
-    #print("Starting a new game...")
+    print("The game is starting! BroadCast")
     broadcast("The game is starting!")
     # Set first player ID
-    first_player_id = players[0]
+    first_player_id = players[playerTurn]
     # Modify games table in DB
     start_game(game_id, first_player_id)
     
+    DEVELOP_game_state = 3
+    
     deal_cards(players, game_id)
-    table_hand = []
+    table_hand = ''
     #MAIN GAME LOOP \/
     while True:
         game_state = get_game_state(game_id)
-        if game_state == GameState.FINISHED:
+        if game_state[0] == GameState.FINISHED.value:
                 break        
-        deal_cards_on_table(game_state, table_hand)
+        print(f"game state: {game_state}")
+        table_hand = deal_cards_on_table(game_state[0], table_hand)
+        print(f"table hand: {table_hand}")
         #TRUN LOOP
         while True:                   
             current_player_socket = clients[0]
-            current_player_id = get_current_player(game_id)        
-            broadcast(f"Player {current_player_id}'s turn")
+            current_player_id = get_current_player(game_id)
+            print(f"Player {current_player_id[0]}'s turn")
+            broadcast(f"Player {current_player_id[0]}'s turn")
             
             # PLAYER ACTIONS IN TURN LOOP       
-            while True:
-                # Listen to player action
-                action = str(current_player_socket.recv(1024).decode('utf-8'))
+            # Listen to player action
+            print("Listetning to player action")
+            action = str(current_player_socket.recv(1024).decode('utf-8'))
                 # :fold
                 # :bet x
                 # :call
                 # :check
+            try:
                 betAmount = action.split(" ")[1]
-                if process_player_action(action, current_player_socket, current_player_id, betAmount, game_id):
-                    break
-                    
-
-            # KALKULACJE PULI / WARTOSCI / SIŁY KART GRACZY
+            except:
+                betAmount = 0
+                
+            print(f"Action type: {action}")
+                
+            process_player_action(int(action), current_player_socket, current_player_id, betAmount, game_id)
+            print("Player action end")
 
             # For this example, just rotate between players
-            next_player = (current_player_id % len(players)) + 1
-            set_next_player(next_player)
+            playerTurn+=1
+            if playerTurn >= playerCount:
+                playerTurn=0
+            next_player = players[playerTurn]
             
-            #if when all players will do sth then break
+            print(f"next player: {next_player}")
+            if next_player==first_player_id: break            
+            set_next_player(next_player, game_id)
+        DEVELOP_game_state+=1
+        update_game_state(game_id, DEVELOP_game_state)
+        
+    print("Game ended, start new game!")
+            
 
 if __name__ == "__main__":
     threading.Thread(target=game_loop).start()

@@ -23,7 +23,7 @@ def setup_database():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS games (
             game_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            state INTIGER NOT NULL,  -- 
+            state INTEGER NOT NULL,  -- 
             current_player_id INTEGER,  -- Points to player whos currently playing
             winner_id INTEGER,  -- Points to the winning playerc
             turnPool INTEGER,
@@ -108,7 +108,7 @@ def start_game(game_id, first_player_id):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     cursor.execute('UPDATE games SET state = ?, current_player_id = ? WHERE game_id = ?',
-                   (2, first_player_id, game_id))
+                   (3, first_player_id, game_id))
     conn.commit()
     conn.close()
     
@@ -144,8 +144,12 @@ def set_player_state(player_id, action_type):
     conn.commit()
     conn.close()  
     
-def set_next_player(player_id):
-    return 1
+def set_next_player(player_id, game_id):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()    
+    cursor.execute('UPDATE games SET current_player_id = ? WHERE id = ?', (player_id, game_id))
+    conn.commit()
+    conn.close()  
 
 def player_fold(player_id):
     conn = sqlite3.connect(DB_NAME)
