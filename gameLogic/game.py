@@ -2,6 +2,8 @@ import random
 import sys
 import os
 import socket
+import threading
+import time
 
 # NAJWAŻNIEJSZE TODO
 
@@ -24,7 +26,7 @@ if project_root not in sys.path:
 
 from database.server_db import *
 from database.client_db import *
-from server.server import broadcast, clients
+from server.server import broadcast, start_server, clients
 from enum import Enum
 
 class PlayerActions(Enum):
@@ -127,7 +129,9 @@ def process_player_action(action, current_player_socket, current_player_id, betA
 
 #template game loop, need to link to db and server action
 def game_loop():
-    
+    time.sleep(5)
+    print('starting main game loop') 
+
     # Prepare game
     
     # Add starting state to DB
@@ -135,7 +139,7 @@ def game_loop():
     # It created new gameID, fetch this ID
     game_id = get_latest_game_id()
     # Fetch all currently connected players
-    players = get_all_clients()
+    players = []
     
     #print("Starting a new game...")
     broadcast("The game is starting!")
@@ -178,5 +182,7 @@ def game_loop():
             set_next_player(next_player)
             
             #if when all players will do sth then break
-            
-        #game state upda
+
+if __name__ == "__main__":
+    threading.Thread(target=game_loop).start()
+    start_server()

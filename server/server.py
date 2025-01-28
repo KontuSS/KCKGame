@@ -71,6 +71,3 @@ def start_server():
         print("Server shutting down.")
     finally:
         server.close()
-
-if __name__ == "__main__":
-    start_server()
