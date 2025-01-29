@@ -1,6 +1,7 @@
 import socket
 import sys
 import os
+import time
 
 # Add the project root directory to sys.path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -35,16 +36,26 @@ def start_client():
 
     # Receive welcome message from server
     welcome_message = client.recv(1024).decode('utf-8')
-    print(f"Server: {welcome_message}")
+    print(f"Server: {welcome_message}")        
 
     try:
         while True:
-            message = input("You: ")
-            if message.lower() == 'quit':
+            while True:
+                message = client.recv(1024).decode('utf-8')
+                print(f"Server: {message}")
+
+                if message == f"Player {client_id} turn":
+                    break
+                time.sleep(1)
+
+            client_input = input("You: ")
+            if client_input.lower() == 'quit':
                 print("Disconnecting...")
                 break
 
-            client.sendall(message.encode('utf-8'))
+            client.sendall(client_input.encode('utf-8'))
+            time.sleep(1)
+            
     except KeyboardInterrupt:
         print("Client shutting down.")
     finally:

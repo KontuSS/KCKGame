@@ -135,6 +135,8 @@ def process_player_action(action, current_player_socket, current_player_id, betA
 
 #template game loop, need to link to db and server action
 def game_loop():
+    time.sleep(2)
+    print('Waiting for players!')
     while len(clientsID)<2:
         time.sleep(2)
         pass
@@ -179,7 +181,7 @@ def game_loop():
             current_player_socket = clients[playerTurn]
             current_player_id = get_current_player(game_id)
             print(f"Player ID:{current_player_id[0]} turn")
-            broadcast(f"Player {current_player_id[0]}'s turn")
+            broadcast(f"Player {current_player_id[0]} turn")
             
             # PLAYER ACTIONS IN TURN LOOP       
             # Listen to player action

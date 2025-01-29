@@ -2,6 +2,7 @@ import socket
 import threading
 import sys
 import os
+import time
 
 # Add the project root directory to sys.path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -42,12 +43,7 @@ def handle_client(client, address):
 
     try:
         while True:
-            # message = client.recv(1024).decode('utf-8')
-            # if not message:
-            #     break
-
-            # print(f"Message from {address}: {message}")
-            # broadcast(message, exclude_client=client)
+            time.sleep(4)
             pass
     except ConnectionResetError:
         print(f"Client {address} disconnected abruptly.")
