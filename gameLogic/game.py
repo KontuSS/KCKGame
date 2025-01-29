@@ -7,16 +7,7 @@ import time
 
 # NAJWAŻNIEJSZE TODO
 
-# 1. Wystawić server zeby mozna było wysyłać z niego requesty i broadcasty
-
-# Ad. 1 pomysł: dać w serverze wątek na stałe śledzenie tabeli 'game' i wysyłanie requestów i broadcastów zaleznie od
-# zmiany w danej krotce
-
-# 2. Zrobić test na wszystkie zapytania do bazy danych czy wszystko jest git
-
-# 3. Zasymulować odpalenie na różnych komputerach
-
-# 4.* Przerobienie/Dorobienie obiektowości i zrobienie z player/server/obsługi klas z metodami i atrybutami
+# *Przerobienie/Dorobienie obiektowości i zrobienie z player/server/obsługi klas z metodami i atrybutami
 # *Nie wiadomo czy potrzebne może sie przyda
 
 # Add the project root directory to sys.path
@@ -204,15 +195,17 @@ def game_loop():
                 
             process_player_action(action, current_player_socket, current_player_id[0], betAmount, game_id)
 
-            # For this example, just rotate between players
+            # Rotate between players
             playerTurn+=1
-            if playerTurn >= playerCount:
-                playerTurn=0
-            next_player = players[playerTurn]
             
-            #print(f"next player: {next_player}")
-            if next_player==first_player_id: break            
+            if playerTurn > (playerCount-1):
+                playerTurn=0
+                
+            next_player = players[playerTurn]
+            if next_player==first_player_id: break 
+                       
             set_next_player(next_player, game_id)
+            
         # After turn
         DEVELOP_game_state+=1
         update_game_state(game_id, DEVELOP_game_state)

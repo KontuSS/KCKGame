@@ -91,9 +91,9 @@ def get_current_player(game_id):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()    
     cursor.execute('SELECT current_player_id FROM games WHERE game_id = ?', (game_id,))
-    state = cursor.fetchone()    
+    player = cursor.fetchone()    
     conn.close()
-    return state
+    return player
     
 #Game menagment and initalizers within database
 def add_new_game():
