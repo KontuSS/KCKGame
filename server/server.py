@@ -3,6 +3,7 @@ import threading
 import sys
 import os
 import time
+import json
 
 # Add the project root directory to sys.path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -19,10 +20,17 @@ PORT = 12345
 clients = []
 clientsID = []
 
-def broadcast(message, exclude_client=None):
+def broadcast_single_client(obj, client_index):
+    jsonStr = json.dumps(obj.__dict__)
+    for i, client in enumerate(clients):
+        if i == client_index:
+            client.sendall(jsonStr.encode('utf-8'))
+
+def broadcast(obj, exclude_client=None):
     """Send a message to all clients."""
+    jsonStr = json.dumps(obj.__dict__)
     for client in clients:
-        client.sendall(message.encode('utf-8'))
+        client.sendall(jsonStr.encode('utf-8'))
 
 def handle_client(client, address):
     """Handle communication with an individual client."""

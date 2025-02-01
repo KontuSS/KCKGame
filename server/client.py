@@ -2,6 +2,7 @@ import socket
 import sys
 import os
 import time
+import json
 
 # Add the project root directory to sys.path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -12,6 +13,28 @@ from database.client_db import *
 # Server connection settings
 HOST = '127.0.0.1'
 PORT = 12345
+
+class MainDTO(object):
+    whichPlayerTurn = None
+    ectsInPool = 0
+    highestEctsToMatch = 0
+    lastPlayerId = None
+    lastPlayerAction = None
+    gameState = 0
+    playerCards = ''
+    cardsOnTable = ''
+
+    def __init__(self, whichPlayerTurn=None, ectsInPool=0, highestEctsToMatch=0, 
+                 lastPlayerId=None, lastPlayerAction=None, gameState=None, 
+                 playerCards='', cardsOnTable=''):
+        self.whichPlayerTurn = whichPlayerTurn
+        self.ectsInPool = ectsInPool
+        self.highestEctsToMatch = highestEctsToMatch
+        self.lastPlayerId = lastPlayerId
+        self.lastPlayerAction = lastPlayerAction
+        self.gameState = gameState
+        self.playerCards = playerCards
+        self.cardsOnTable = cardsOnTable
 
 def start_client():
     """Start the client and send its information to the server."""
@@ -35,17 +58,20 @@ def start_client():
     client.sendall(str(client_id).encode('utf-8'))
 
     # Receive welcome message from server
-    welcome_message = client.recv(1024).decode('utf-8')
+    welcome_message = client.recv(2024).decode('utf-8')
     print(f"Server: {welcome_message}")        
 
     try:
         while True:
             while True:
-                message = client.recv(1024).decode('utf-8')
-                print(f"Server: {message}")
-
-                if message == f"Player {client_id} turn":
-                    break
+                message = client.recv(2024).decode('utf-8')
+                if(message != None):
+                    print(f"Server: {message}")
+                    dto = MainDTO(**json.loads(message))
+                    
+                    if dto.whichPlayerTurn == client_id:
+                        break
+                    
                 time.sleep(1)
 
             client_input = input("You: ")
