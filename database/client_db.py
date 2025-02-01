@@ -5,17 +5,14 @@ DB_NAME = "game.db"
 def generate_client_info():
     """Generate client information and store it locally."""
     name = input("Enter your name: ")
-    department = input("Enter your department: ")
-    ectsPool = int(input("Enter your ects pool: "))
-
     # Store in local database
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute('INSERT INTO players (name, department, ectsPool) VALUES (?, ?, ?)', (name, department, ectsPool))
+    cursor.execute('INSERT INTO players (name, department, ectsPool) VALUES (?)', (name,))
     conn.commit()
     client_id = cursor.lastrowid
     conn.close()
-    return client_id, name, department
+    return client_id, name
 
 def save_hand(game_id, player_id, cards, hand_strength):
     conn = sqlite3.connect(DB_NAME)

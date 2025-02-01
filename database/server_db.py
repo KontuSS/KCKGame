@@ -14,7 +14,7 @@ def setup_database():
             department TEXT NOT NULL,
             action INTEGER,
             state INTEGER, --playing:0 , folded:1,
-            ectsPool INTEGER
+            ectsPool INTEGER DEFAULT 30
         )
     ''')
     conn.commit()
