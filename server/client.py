@@ -12,8 +12,10 @@ if project_root not in sys.path:
 from database.client_db import *
 # Server connection settings
 # HOST = '10.128.134.128' # <- IP address on my pc on edurom
-HOST = '127.0.0.1'
+HOST = '10.128.134.128'
 PORT = 12345
+client_id = 0
+client = None
 
 class MainDTO(object):
     whichPlayerTurn = None
@@ -37,7 +39,7 @@ class MainDTO(object):
         self.playerCards = playerCards
         self.cardsOnTable = cardsOnTable
 
-def start_client():
+def start_client(name):
     """Start the client and send its information to the server."""
 
     # Check if client info already exists
@@ -49,17 +51,16 @@ def start_client():
     #     client_id, name, department = client_info
     #     print(f"Existing Client: ID={client_id}, Name={name}, Department={department}")
 
-    client_id, name = generate_client_info()
-    print(f"Generated Client: ID={client_id}, Name={name}")
-
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((HOST, PORT))
 
     # Send client ID to server
-    client.sendall(str(str(client_id)+" "+name).encode('utf-8'))
+    client.sendall(name.encode('utf-8'))
+
+    client_id = int(client.recv(1024).decode('utf-8'))
 
     # Receive welcome message from server
-    welcome_message = client.recv(2024).decode('utf-8')
+    welcome_message = client.recv(1024).decode('utf-8')
     print(f"Server: {welcome_message}")        
 
     try:
@@ -89,4 +90,4 @@ def start_client():
         client.close()
 
 if __name__ == "__main__":
-    start_client()
+    start_client(None)

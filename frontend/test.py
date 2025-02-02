@@ -1,7 +1,18 @@
 import pygame
 import sys
 from enum import Enum
-from time import sleep
+import socket
+import sys
+import os
+import time
+import json
+
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if project_root not in sys.path:
+    sys.path.append(project_root)
+from server.server import start_server, client_id, client
+
+global IDgracz
 class CardPosition(Enum):
     KARTY_STOLU = 1
     KARTY_GRACZA = 2
@@ -12,7 +23,7 @@ class CardPosition(Enum):
 pygame.init()
 player_score=10
 # Przykładowa lista kart gracza
-player_cards = ['2C', '3C', '4C']
+player_cards = ['C2', 'C3', 'CQ', 'CK', 'CA']
 player1_cards = ['2C', '3C', '4C']
 player2_cards = ['2C', '3C', '4C']
 player3_cards = ['2C', '3C', '4C']
@@ -26,7 +37,8 @@ pygame.display.set_caption("Poker Game")
 table_img = pygame.image.load("././grafiki/inne elementy/stol_testowy.png")
 card_back = pygame.image.load("././grafiki\\inne elementy\\tyl_karty.png")
 def get_card_image(card_name):
-    card_image_path = f"././grafiki\\Karty\\[\'{card_name}\'].png"
+    value,color = card_name[0], card_name[1:]
+    card_image_path = f"././grafiki\\Karty\\[\'{color+value}\'].png"
     return pygame.image.load(card_image_path)
 def draw_table():
     scaled_table = pygame.transform.scale(table_img, (screen.get_width(), screen.get_height()))
@@ -85,6 +97,7 @@ def draw_action_buttons(mouse_pos, mouse_clicked):
     # Obsługa kliknięcia przycisków
     if mouse_clicked:
         if fold_rect.collidepoint(mouse_pos):
+
             print("fold clicked")
         elif hold_rect.collidepoint(mouse_pos):
             print("hold clicked")
@@ -92,6 +105,7 @@ def draw_action_buttons(mouse_pos, mouse_clicked):
             print("check clicked")
         elif raise_button_rect.collidepoint(mouse_pos):
             print("Raise clicked")
+
 def draw_card(x, y, card, face_up=True, rotate=False):
     """
     Rysuje pojedynczą kartę.
@@ -159,9 +173,11 @@ def start_screen():
     clock = pygame.time.Clock()
     screen.fill((0, 0, 0))
     holder = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))
-
+    pygame.mixer.init()  # Inicjalizacja modułu mixer
+    pygame.mixer.music.load("././grafiki/music/poczatek.mp3")  # Załaduj plik muzyczny
+    pygame.mixer.music.play(-1) 
     while True:
-  
+ 
         screen.blit(holder, (0, 0))
         # Rysowanie pola tekstowego
         pygame.draw.rect(screen, (255, 255, 255), input_box, 0)
@@ -179,6 +195,7 @@ def start_screen():
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN and len(text) > 0:
+                    pygame.mixer.music.stop()
                     return text
                 elif event.key == pygame.K_BACKSPACE:
                     text = text[:-1]
@@ -186,6 +203,7 @@ def start_screen():
                     text += event.unicode
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button.collidepoint(event.pos) and len(text) > 0:
+                    pygame.mixer.music.stop()
                     return text
  
         clock.tick(60)
@@ -194,6 +212,8 @@ def display_win():
     """
     Wyświetla obraz o wygranej na środku ekranu.
     """
+    pygame.mixer.music.stop()
+    pygame.mixer.music.load("././grafiki/music/wygrana.mp3")  # 
     win_image = pygame.image.load("././grafiki\\inne elementy\\Wygrana.png")
     win_image = pygame.transform.scale(win_image, (screen.get_width(), screen.get_height()))
     screen.blit(win_image, (0, 0))
@@ -203,19 +223,22 @@ def display_loss():
     """
     Wyświetla obraz o przegranej na środku ekranu.
     """
+    pygame.mixer.music.stop()
+    pygame.mixer.music.load("././grafiki/music/przegrana.mp3")  # 
     loss_image = pygame.image.load("././grafiki\\inne elementy\\Przegrana.png")
     loss_image = pygame.transform.scale(loss_image, (screen.get_width(), screen.get_height()))
     screen.blit(loss_image, (0, 0))
     pygame.display.flip()
 
-def start_pygame_ui(game):
+def start_pygame_ui():
+
     nick = start_screen()
+    start_server(nick)
+    
     # tu wpisuje imię gracza i robię pentelkę aż reszta graczy wkroczy 
-    while True:
-        liczba_graczy = 4  #zapytanie do serwera o liste graczy
-        if liczba_graczy == 4:
-            break
-        sleep(100)
+    #IDgracz = int(client.recv(1024).decode('utf-8'))
+    client.recv(1024).decode('utf-8')
+
     clock = pygame.time.Clock()
     # game.add_player(nick)
     # Dane dotyczące kart – szerokość, wysokość, odstęp
@@ -228,8 +251,12 @@ def start_pygame_ui(game):
     # Obliczenie pozycji, aby wyśrodkować karty na ekranie (stół)
 
     #zapytanie o karty do konkretnego gracza i ustawienie ich
+    pygame.mixer.music.load("././grafiki/music/rozgrywka.mp3")  # Załaduj plik muzyczny
+    pygame.mixer.music.play(-1) 
+    #stop jak wyjdzie decyzja o rzogrywce
+    player_card=[]
     while True:
-
+       
         #update odnośnie co się dzieje
         mouse_clicked = False
         for event in pygame.event.get():
@@ -269,6 +296,8 @@ def start_pygame_ui(game):
         draw_action_buttons(mouse_pos, mouse_clicked)
         draw_player_info(nick, player_score)
         pygame.display.flip()
+        
         clock.tick(60)
 
-start_pygame_ui(None)
+
+start_pygame_ui()
