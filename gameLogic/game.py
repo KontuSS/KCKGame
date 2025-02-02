@@ -46,8 +46,9 @@ class MainDTO(object):
     lastPlayerId = None
     lastPlayerAction = None
     gameState = 1
-    playerCards = ''
+    playerCards = {}
     cardsOnTable = ''
+    winnerPlayerId = None
 
     def reset_game(self):
         self.whichPlayerTurn = None
@@ -58,6 +59,7 @@ class MainDTO(object):
         self.gameState = GameState.WAITING
         self.playerCards = ''
         self.cardsOnTable = ''
+        self.winnerPlayerId = None
 
     def set_which_player_turn(self, player_turn):
         self.whichPlayerTurn = player_turn
@@ -77,11 +79,14 @@ class MainDTO(object):
     def set_game_state(self, game_state):
         self.gameState = game_state
 
-    def set_player_cards(self, cards):
-        self.playerCards = cards
+    def set_player_cards(self, cards, player):
+        self.playerCards[player] = cards
 
     def set_cards_on_table(self, cards):
         self.cardsOnTable = cards
+        
+    def set_winner_player_ID(self, playerID):
+        self.winnerPlayerId = playerID
 
 # game data
 
@@ -107,10 +112,10 @@ def deal_cards(players, game_id):
         print(f"Hand: {hand}")
         hand_strength = evaluate_hand(hand)
         save_hand(game_id, player, hand, hand_strength)
-        game.set_player_cards(hand)
-        broadcast_single_client(game, i)
-        game.set_player_cards('')
-
+        game.set_player_cards(hand, player)
+        #broadcast_single_client(game, i)
+        #game.set_player_cards('')
+    broadcast(game)
 
 # Evaluate hand strength (simple logic for now)
 def evaluate_hand(hand):
@@ -194,7 +199,7 @@ def process_player_action(action, current_player_socket, current_player_id, betA
 def game_loop():
     time.sleep(2)
     print('Waiting for players!')
-    while len(clientsID)<2:
+    while len(clientsID)<1:
         time.sleep(2)
         pass
     
@@ -298,8 +303,13 @@ def game_loop():
 
         if(ectsPool[0] > 50):
             # for player in players:
-            #evaluate_hand()
-            print("ev hand")
+            handStrenght = []            
+            for player in players:
+                cards = get_player_cards(player)
+                handStrenght.append(evaluate_hand(cards, table_hand))
+            winningPlayer = player.index(handStrenght.index(max(handStrenght)))
+            game.set_winner_player_ID(winningPlayer)
+            broadcast(game)
             break
         
     print("Game ended, start new game!")
