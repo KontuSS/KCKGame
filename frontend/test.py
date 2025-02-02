@@ -23,10 +23,10 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption("Poker Game")
 
 # Załadowanie grafik
-table_img = pygame.image.load("C:\\Users\\krzes\\OneDrive\\Pulpit\\pythonProject\\przykladowy flask\\KCKGame\\grafiki\\inne elementy\\stol_testowy.png")
-card_back = pygame.image.load("C:\\Users\\krzes\\OneDrive\\Pulpit\\pythonProject\\przykladowy flask\\KCKGame\\grafiki\\inne elementy\\tyl_karty.png")
+table_img = pygame.image.load("././grafiki/inne elementy/stol_testowy.png")
+card_back = pygame.image.load("././grafiki\\inne elementy\\tyl_karty.png")
 def get_card_image(card_name):
-    card_image_path = f"C:\\Users\\krzes\\OneDrive\\Pulpit\\pythonProject\\przykladowy flask\\KCKGame\\grafiki\\Karty\\[\'{card_name}\'].png"
+    card_image_path = f"././grafiki\\Karty\\[\'{card_name}\'].png"
     return pygame.image.load(card_image_path)
 def draw_table():
     scaled_table = pygame.transform.scale(table_img, (screen.get_width(), screen.get_height()))
@@ -151,7 +151,7 @@ def draw_cards(cards, position, face_up=True):
             y = start_y
             draw_card(x, y, card, face_up, rotate=False)
 def start_screen():
-    background = pygame.image.load("C:\\Users\\krzes\\OneDrive\\Pulpit\\pythonProject\\przykladowy flask\\KCKGame\\grafiki\\inne elementy\\EkranStart.png")
+    background = pygame.image.load("././grafiki\\inne elementy\\EkranStart.png")
     input_box = pygame.Rect(300, 300, 200, 40)
     font = pygame.font.Font(None, 32)
     play_button = pygame.Rect(350, 400, 100, 50)
@@ -194,7 +194,7 @@ def display_win():
     """
     Wyświetla obraz o wygranej na środku ekranu.
     """
-    win_image = pygame.image.load("C:\\Users\\krzes\\OneDrive\\Pulpit\\pythonProject\\przykladowy flask\\KCKGame\\grafiki\\inne elementy\\Wygrana.png")
+    win_image = pygame.image.load("././grafiki\\inne elementy\\Wygrana.png")
     win_image = pygame.transform.scale(win_image, (screen.get_width(), screen.get_height()))
     screen.blit(win_image, (0, 0))
     pygame.display.flip()
@@ -203,7 +203,7 @@ def display_loss():
     """
     Wyświetla obraz o przegranej na środku ekranu.
     """
-    loss_image = pygame.image.load("C:\\Users\\krzes\\OneDrive\\Pulpit\\pythonProject\\przykladowy flask\\KCKGame\\grafiki\\inne elementy\\Przegrana.png")
+    loss_image = pygame.image.load("././grafiki\\inne elementy\\Przegrana.png")
     loss_image = pygame.transform.scale(loss_image, (screen.get_width(), screen.get_height()))
     screen.blit(loss_image, (0, 0))
     pygame.display.flip()
