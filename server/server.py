@@ -52,13 +52,19 @@ def handle_client(client, address):
 
     try:
         while True:
-            time.sleep(4)
-            pass
-    except ConnectionResetError:
-        print(f"Client {address} disconnected abruptly.")
+            try:
+                time.sleep(4)
+                pass                
+            except (ConnectionResetError, BrokenPipeError):
+                print(f"Client {address} disconnected unexpectedly.")
+                break
+    except (ConnectionResetError, BrokenPipeError):
+        print(f"Client {address} disconnected unexpectedly.")
     finally:
-        clients.remove(client)
-        clientsID.remove(client_id)
+        if client in clients:
+            clients.remove(client)
+        if client_id in clientsID:
+            clientsID.remove(client_id)
         client.close()
         print(f"Connection with {address} closed.")
 

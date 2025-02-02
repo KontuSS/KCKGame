@@ -10,10 +10,12 @@ if project_root not in sys.path:
     sys.path.append(project_root)
 
 from database.client_db import *
+from server.server import HOST, PORT
 # Server connection settings
-# HOST = '10.128.134.128' # <- IP address on my pc on edurom
-HOST = '127.0.0.1'
-PORT = 12345
+# HOST = HOST on server
+HOST_C = HOST
+# PORT = PORT on server
+PORT_C = PORT
 
 class MainDTO(object):
     whichPlayerTurn = None
@@ -53,7 +55,7 @@ def start_client():
     print(f"Generated Client: ID={client_id}, Name={name}")
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect((HOST, PORT))
+    client.connect((HOST_C, PORT_C))
 
     # Send client ID to server
     client.sendall(str(client_id+" "+name).encode('utf-8'))
