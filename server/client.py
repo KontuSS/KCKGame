@@ -11,8 +11,8 @@ if project_root not in sys.path:
 
 from database.client_db import *
 # Server connection settings
-# HOST = '10.128.134.128' # <- IP address on my pc on edurom
-HOST = '127.0.0.1'
+HOST = '10.128.134.128' # <- IP address on my pc on edurom
+# HOST = '127.0.0.1'
 PORT = 12345
 
 class MainDTO(object):
@@ -57,7 +57,7 @@ def start_client():
     # Send client ID to server
     client.sendall(name.encode('utf-8'))
 
-    client_id = int(client.recv(1024).decode('utf-8'))
+    client_id = client.recv(1024).decode('utf-8')
 
     # Receive welcome message from server
     welcome_message = client.recv(1024).decode('utf-8')
@@ -70,8 +70,9 @@ def start_client():
                 if(message != None):
                     print(f"Server: {message}")
                     dto = MainDTO(**json.loads(message))
-                    
-                    if dto.whichPlayerTurn == client_id:
+
+                    if str(dto.whichPlayerTurn) == str(client_id):
+                        print('ASK FOR CLIENT INPUT')
                         break
                     
                 time.sleep(1)
