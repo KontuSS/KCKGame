@@ -232,6 +232,7 @@ def game_loop():
     time.sleep(1)
     #MAIN GAME LOOP \/
     while True:
+        playerTurn = 0
         game_state = get_game_state(game_id)
         if game_state[0] == GameState.FINISHED.value:
                 break        
@@ -270,9 +271,9 @@ def game_loop():
             process_player_action(action, current_player_socket, current_player_id[0], betAmount, game_id)
             
             #block bet under maxbet
-            if action == PlayerActions.BET.value and betAmount>maxBet:
+            if action == PlayerActions.BET.value and betAmount>str(maxBet):
                 maxBet = betAmount
-                turnLenght = playerCount - 1
+                turnLenght = playerCount
             
             
             time.sleep(1)
@@ -286,7 +287,7 @@ def game_loop():
                 
             next_player = players[playerTurn]
             if turnLenght==0: break
-                       
+            print("NEXT PLAYER TURN")
             set_next_player(next_player, game_id)
             
         # After turn
@@ -295,9 +296,10 @@ def game_loop():
         ectsPool = get_ectsPool(game_id)
         print(f"Current ects pool: {ectsPool}")
 
-        if(ectsPool == 50):
+        if(ectsPool[0] > 50):
             # for player in players:
-            #     evaluate_hand()
+            #evaluate_hand()
+            print("ev hand")
             break
         
     print("Game ended, start new game!")
