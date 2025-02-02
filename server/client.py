@@ -10,12 +10,10 @@ if project_root not in sys.path:
     sys.path.append(project_root)
 
 from database.client_db import *
-from server.server import HOST, PORT
 # Server connection settings
-# HOST = HOST on server
-HOST_C = HOST
-# PORT = PORT on server
-PORT_C = PORT
+# HOST = '10.128.134.128' # <- IP address on my pc on edurom
+HOST = '127.0.0.1'
+PORT = 12345
 
 class MainDTO(object):
     whichPlayerTurn = None
