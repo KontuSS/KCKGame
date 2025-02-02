@@ -1,6 +1,6 @@
 import sqlite3
 
-DB_NAME = "clients.db"
+DB_NAME = "game.db"
 
 def setup_database():
     """Create the clients tables if it doesn't already exist."""
@@ -11,10 +11,9 @@ def setup_database():
         CREATE TABLE IF NOT EXISTS players (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
-            department TEXT NOT NULL,
             action INTEGER,
             state INTEGER, --playing:0 , folded:1,
-            ectsPool INTEGER
+            ectsPool INTEGER DEFAULT 30
         )
     ''')
     conn.commit()
@@ -91,9 +90,9 @@ def get_current_player(game_id):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()    
     cursor.execute('SELECT current_player_id FROM games WHERE game_id = ?', (game_id,))
-    state = cursor.fetchone()    
+    player = cursor.fetchone()    
     conn.close()
-    return state
+    return player
     
 #Game menagment and initalizers within database
 def add_new_game():
