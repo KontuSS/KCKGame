@@ -46,7 +46,7 @@ def handle_client(client, address):
     client_info = get_player_by_id(client_id)
     
     if client_info:
-        client.sendall(f"Welcome {client_info[1]} from {client_info[2]} department!".encode('utf-8'))
+        client.sendall(f"Welcome {client_info[0]} from {client_info[1]} department!".encode('utf-8'))
     else:
         client.sendall("Client not found in database.".encode('utf-8'))
 

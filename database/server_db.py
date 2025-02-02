@@ -13,7 +13,7 @@ def setup_database():
             name TEXT NOT NULL,
             action INTEGER,
             state INTEGER, --playing:0 , folded:1,
-            ectsPool INTEGER DEFAULT 30
+            ectsPool INTEGER
         )
     ''')
     conn.commit()

@@ -161,7 +161,6 @@ def deal_cards_on_table(game_state, table_hand):
 def process_player_action(action, current_player_socket, current_player_id, betAmount, game_id):
     game.set_last_player_id(current_player_id)
     game.set_which_player_turn(None)
-
     if action == PlayerActions.CHECK.value:
         game.set_last_player_action(PlayerActions.CHECK.value)
         broadcast(game)
@@ -243,7 +242,7 @@ def game_loop():
             current_player_socket = clients[playerTurn]
             current_player_id = get_current_player(game_id)
             print(f"Player ID:{current_player_id[0]} turn")
-            game.set_which_player_turn(current_player_id[0])
+            game.set_which_player_turn(int(current_player_id[0]))
             time.sleep(1)
             broadcast(game)
             

@@ -11,6 +11,8 @@ def generate_client_info():
     cursor.execute('INSERT INTO players (name) VALUES (?)', (name,))
     conn.commit()
     client_id = cursor.lastrowid
+    cursor.execute('UPDATE players SET ectsPool = ? WHERE id = ?', (30,client_id))
+    conn.commit()
     conn.close()
     return client_id, name
 
