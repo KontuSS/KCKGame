@@ -198,7 +198,7 @@ def game_loop():
         time.sleep(2)
         pass
     
-    DECK = [f"{rank}{suit}" for suit in SUITS for rank in RANKS]
+    #DECK = [f"{rank}{suit}" for suit in SUITS for rank in RANKS]
     random.shuffle(DECK)
     
     print("Game is starting!")

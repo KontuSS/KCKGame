@@ -14,8 +14,7 @@ from database.server_db import *
 from database.client_db import *
 
 # Server settings
-# HOST = '10.128.134.128' # <- IP address on my pc on edurom
-HOST = '127.0.0.1'
+HOST = '10.128.134.128' # <- IP address on my pc on edurom
 PORT = 12345
 
 # Networking
@@ -42,10 +41,11 @@ def handle_client(client, address):
     # Receive client's ID
     name = client.recv(1024).decode('utf-8')
     client_id = generate_client_info(name)
-    clientsID.append(client_id)
+    clientsID.append(client_id[0])
     
     # Retrieve client information from the database
-    client.sendall(str(client_id).encode(1024))
+    print(f"id: {client_id[0]}")
+    client.sendall(str(client_id[0]).encode('utf-8'))
     
     client.sendall(f"Welcome {name}!".encode('utf-8'))
 
