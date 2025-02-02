@@ -69,8 +69,9 @@ def start_client():
                 if(message != None):
                     print(f"Server: {message}")
                     dto = MainDTO(**json.loads(message))
-                    
-                    if dto.whichPlayerTurn == client_id:
+
+                    if str(dto.whichPlayerTurn) == str(client_id):
+                        print('ASK FOR CLIENT INPUT')
                         break
                     
                 time.sleep(1)
