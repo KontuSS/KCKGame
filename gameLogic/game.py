@@ -212,6 +212,8 @@ def game_loop():
     players = clientsID
     playerCount = len(players)
     playerTurn = 0
+    turnLenght = playerCount
+    maxBet = 0
     print(f"players table: {players}")
 
     game.set_game_state(GameState.STARTING.value)
@@ -266,16 +268,24 @@ def game_loop():
             
                 
             process_player_action(action, current_player_socket, current_player_id[0], betAmount, game_id)
+            
+            #block bet under maxbet
+            if action == PlayerActions.BET.value and betAmount>maxBet:
+                maxBet = betAmount
+                turnLenght = playerCount - 1
+            
+            
             time.sleep(1)
 
             # Rotate between players
             playerTurn+=1
+            turnLenght-=1
             
             if playerTurn > (playerCount-1):
                 playerTurn=0
                 
             next_player = players[playerTurn]
-            if next_player==first_player_id: break 
+            if turnLenght==0: break
                        
             set_next_player(next_player, game_id)
             

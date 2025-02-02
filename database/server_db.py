@@ -208,3 +208,11 @@ def player_call(player_id, game_id):
     conn.commit()
     
     conn.close()
+
+def get_player_cards(player_id):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()    
+    cursor.execute('SELECT cards FROM hands WHERE player_id = ?', (player_id,))
+    client = cursor.fetchone()
+    conn.close()
+    return client
