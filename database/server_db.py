@@ -13,7 +13,7 @@ def setup_database():
             name TEXT NOT NULL,
             action INTEGER,
             state INTEGER, --playing:0 , folded:1,
-            ectsPool INTEGER DEFAULT 30
+            ectsPool INTEGER
         )
     ''')
     conn.commit()
@@ -208,3 +208,11 @@ def player_call(player_id, game_id):
     conn.commit()
     
     conn.close()
+
+def get_player_cards(player_id):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()    
+    cursor.execute('SELECT cards FROM hands WHERE player_id = ?', (player_id,))
+    client = cursor.fetchone()
+    conn.close()
+    return client

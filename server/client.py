@@ -51,13 +51,15 @@ def start_client(name):
     #     client_id, name, department = client_info
     #     print(f"Existing Client: ID={client_id}, Name={name}, Department={department}")
 
+    name = input("Enter your name: ")
+
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((HOST, PORT))
 
     # Send client ID to server
     client.sendall(name.encode('utf-8'))
 
-    client_id = int(client.recv(1024).decode('utf-8'))
+    client_id = client.recv(1024).decode('utf-8')
 
     # Receive welcome message from server
     welcome_message = client.recv(1024).decode('utf-8')
@@ -70,8 +72,9 @@ def start_client(name):
                 if(message != None):
                     print(f"Server: {message}")
                     dto = MainDTO(**json.loads(message))
-                    
-                    if dto.whichPlayerTurn == client_id:
+
+                    if str(dto.whichPlayerTurn) == str(client_id):
+                        print('ASK FOR CLIENT INPUT')
                         break
                     
                 time.sleep(1)

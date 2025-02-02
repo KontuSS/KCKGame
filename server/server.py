@@ -11,10 +11,10 @@ if project_root not in sys.path:
     sys.path.append(project_root)
 
 from database.server_db import *
+from database.client_db import *
 
 # Server settings
-# HOST = '10.128.134.128' # <- IP address on my pc on edurom
-HOST = '127.0.0.1'
+HOST = '10.128.134.128' # <- IP address on my pc on edurom
 PORT = 12345
 
 # Networking
@@ -39,16 +39,16 @@ def handle_client(client, address):
     clients.append(client)
     
     # Receive client's ID
-    client_id = client.recv(1024).decode('utf-8')
-    clientsID.append(client_id)
+    name = client.recv(1024).decode('utf-8')
+    client_id = generate_client_info(name)
+    clientsID.append(client_id[0])
     
     # Retrieve client information from the database
-    client_info = get_player_by_id(client_id)
+    print(f"id: {client_id[0]}")
+    client.sendall(str(client_id[0]).encode('utf-8'))
     
-    if client_info:
-        client.sendall(f"Welcome {client_info[1]} from {client_info[2]} department!".encode('utf-8'))
-    else:
-        client.sendall("Client not found in database.".encode('utf-8'))
+    client.sendall(f"Welcome {name}!".encode('utf-8'))
+
 
     try:
         while True:

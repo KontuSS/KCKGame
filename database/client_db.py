@@ -2,15 +2,16 @@ import sqlite3
 
 DB_NAME = "game.db"
 
-def generate_client_info():
+def generate_client_info(name):
     """Generate client information and store it locally."""
-    name = input("Enter your name: ")
     # Store in local database
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     cursor.execute('INSERT INTO players (name) VALUES (?)', (name,))
     conn.commit()
     client_id = cursor.lastrowid
+    cursor.execute('UPDATE players SET ectsPool = ? WHERE id = ?', (30,client_id))
+    conn.commit()
     conn.close()
     return client_id, name
 
