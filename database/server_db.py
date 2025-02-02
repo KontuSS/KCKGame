@@ -11,7 +11,6 @@ def setup_database():
         CREATE TABLE IF NOT EXISTS players (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
-            department TEXT NOT NULL,
             action INTEGER,
             state INTEGER, --playing:0 , folded:1,
             ectsPool INTEGER DEFAULT 30
