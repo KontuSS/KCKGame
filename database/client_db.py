@@ -8,7 +8,7 @@ def generate_client_info():
     # Store in local database
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute('INSERT INTO players (name, department, ectsPool) VALUES (?)', (name,))
+    cursor.execute('INSERT INTO players (name) VALUES (?)', (name,))
     conn.commit()
     client_id = cursor.lastrowid
     conn.close()
