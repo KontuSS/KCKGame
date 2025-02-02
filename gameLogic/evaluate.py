@@ -52,25 +52,25 @@ def evaluate_hand(player_cards, community_cards):
         straight, straight_ranks = is_straight(ranks)
 
         if flush and straight:
-            best_rank = "Straight Flush"
+            best_rank = 8
         elif 4 in rank_counts.values():
-            best_rank = "Four of a Kind"
+            best_rank = 7
         elif sorted(rank_counts.values()) == [2, 3]:
-            best_rank = "Full House"
+            best_rank = 6
         elif flush:
-            best_rank = "Flush"
+            best_rank = 5
         elif straight:
-            best_rank = "Straight"
+            best_rank = 4
         elif 3 in rank_counts.values():
-            best_rank = "Three of a Kind"
+            best_rank = 3
         elif list(rank_counts.values()).count(2) == 2:
-            best_rank = "Two Pair"
+            best_rank = 2
         elif 2 in rank_counts.values():
-            best_rank = "Pair"
+            best_rank = 1
 
     return best_rank
 
-# Example usage
-player_cards = ['10H', 'JH']
-community_cards = ['2C', '3D', '4S', '5H', '6H']
-print(evaluate_hand(player_cards, community_cards))
+# # Example usage
+# player_cards = ['10H', 'JH']
+# community_cards = ['2C', '3D', '4S', '5H', '6H']
+# print(evaluate_hand(player_cards, community_cards))
