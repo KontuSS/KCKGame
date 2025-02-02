@@ -62,7 +62,7 @@ def setup_database():
 def get_all_players():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute('SELECT id, name, department FROM players')
+    cursor.execute('SELECT id, name FROM players')
     players = cursor.fetchall()
     conn.close()
     return players
@@ -71,7 +71,7 @@ def get_player_by_id(client_id):
     """Retrieve client information from the database by ID."""
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()    
-    cursor.execute('SELECT id, name, department FROM players WHERE id = ?', (client_id,))
+    cursor.execute('SELECT id, name FROM players WHERE id = ?', (client_id,))
     client = cursor.fetchone()
     conn.close()
     return client

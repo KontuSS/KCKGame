@@ -53,10 +53,10 @@ def start_client():
     print(f"Generated Client: ID={client_id}, Name={name}")
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect((HOST, HOST))
+    client.connect((HOST, PORT))
 
     # Send client ID to server
-    client.sendall(str(client_id+" "+name).encode('utf-8'))
+    client.sendall(str(str(client_id)+" "+name).encode('utf-8'))
 
     # Receive welcome message from server
     welcome_message = client.recv(2024).decode('utf-8')

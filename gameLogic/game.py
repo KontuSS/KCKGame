@@ -285,6 +285,11 @@ def game_loop():
         update_game_state(game_id, DEVELOP_game_state)
         ectsPool = get_ectsPool(game_id)
         print(f"Current ects pool: {ectsPool}")
+
+        if(ectsPool == 50):
+            # for player in players:
+            #     evaluate_hand()
+            break
         
     print("Game ended, start new game!")
             
