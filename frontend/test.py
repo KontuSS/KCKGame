@@ -6,12 +6,16 @@ import sys
 import os
 import time
 import json
+import threading
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if project_root not in sys.path:
     sys.path.append(project_root)
-from server.server import start_server, client_id, client
 
+from server.client import start_client, return_client_id, return_dto, client
+
+global PISZ
+PISZ=False
 global IDgracz
 class CardPosition(Enum):
     KARTY_STOLU = 1
@@ -20,15 +24,29 @@ class CardPosition(Enum):
     KARTY_PRZECIWNIKA_2 = 4
     KARTY_PRZECIWNIKA_3 = 5
 # Inicjalizacja Pygame
+class MainDTO(object):
+    whichPlayerTurn = None
+    ectsInPool = 0
+    highestEctsToMatch = 0
+    lastPlayerId = None
+    lastPlayerAction = None
+    gameState = 0
+    playerCards = ''
+    cardsOnTable = ''
+
+    def __init__(self, whichPlayerTurn=None, ectsInPool=0, highestEctsToMatch=0, 
+                 lastPlayerId=None, lastPlayerAction=None, gameState=None, 
+                 playerCards='', cardsOnTable=''):
+        self.whichPlayerTurn = whichPlayerTurn
+        self.ectsInPool = ectsInPool
+        self.highestEctsToMatch = highestEctsToMatch
+        self.lastPlayerId = lastPlayerId
+        self.lastPlayerAction = lastPlayerAction
+        self.gameState = gameState
+        self.playerCards = playerCards
+        self.cardsOnTable = cardsOnTable
 pygame.init()
-player_score=10
-# Przykładowa lista kart gracza
-player_cards = ['C2', 'C3', 'CQ', 'CK', 'CA']
-player1_cards = ['2C', '3C', '4C']
-player2_cards = ['2C', '3C', '4C']
-player3_cards = ['2C', '3C', '4C']
-hause_cards = ['2C', '3C', '4C','6C']
-liczba_graczy = 4
+
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption("Poker Game")
@@ -96,14 +114,21 @@ def draw_action_buttons(mouse_pos, mouse_clicked):
 
     # Obsługa kliknięcia przycisków
     if mouse_clicked:
-        if fold_rect.collidepoint(mouse_pos):
-
+        if fold_rect.collidepoint(mouse_pos) :
+            PISZ=False
+            client.sendall("4".encode('utf-8'))
             print("fold clicked")
         elif hold_rect.collidepoint(mouse_pos):
-            print("hold clicked")
-        elif check_rect.collidepoint(mouse_pos):
+            client.sendall("2".encode('utf-8'))
+            PISZ=False
+            print("call clicked")
+        elif check_rect.collidepoint(mouse_pos) :
+            client.sendall("3".encode('utf-8'))
+            PISZ=False
             print("check clicked")
         elif raise_button_rect.collidepoint(mouse_pos):
+            client.sendall("1 2".encode('utf-8'))
+            PISZ=False
             print("Raise clicked")
 
 def draw_card(x, y, card, face_up=True, rotate=False):
@@ -229,19 +254,41 @@ def display_loss():
     loss_image = pygame.transform.scale(loss_image, (screen.get_width(), screen.get_height()))
     screen.blit(loss_image, (0, 0))
     pygame.display.flip()
+#zmaina folntu
+def cokolwiek():
+    start_client("ADAM")
 
+    pass
+def listin_for_changrs_dto():
+
+
+
+
+    pass
 def start_pygame_ui():
 
     nick = start_screen()
-    start_server(nick)
-    
+    print(nick)
+    #print(nick.type())
+    threading.Thread(target=start_client, args=(nick,)).start()
+    time.sleep(2)
+    IDgracz = return_client_id()
     # tu wpisuje imię gracza i robię pentelkę aż reszta graczy wkroczy 
     #IDgracz = int(client.recv(1024).decode('utf-8'))
-    client.recv(1024).decode('utf-8')
-
+    time.sleep(5)
+    dto = return_dto()
     clock = pygame.time.Clock()
     # game.add_player(nick)
     # Dane dotyczące kart – szerokość, wysokość, odstęp
+    player_cards = []
+    print("check dto")
+    if dto!=None:
+        player_cards = dto.playerCards.split(', ')
+        print("nie jest none")
+        hause_cards = dto.cardsOnTable.split(', ')
+        player1_cards= dto.playerCards.split(', ')
+        print(dto.playerCards)
+   
     card_width = 71
     card_height = 96
     gap = 10
@@ -254,9 +301,10 @@ def start_pygame_ui():
     pygame.mixer.music.load("././grafiki/music/rozgrywka.mp3")  # Załaduj plik muzyczny
     pygame.mixer.music.play(-1) 
     #stop jak wyjdzie decyzja o rzogrywce
-    player_card=[]
+    player_score = 0
+    player_cards=[]
     while True:
-       
+        dto_UI = return_dto()
         #update odnośnie co się dzieje
         mouse_clicked = False
         for event in pygame.event.get():
@@ -282,22 +330,25 @@ def start_pygame_ui():
             draw_cards(player1_cards, position=CardPosition.KARTY_PRZECIWNIKA_1, face_up=False)
         except:
             pass
-        try:
-            # Rysowanie kart przeciwnika 2
-            draw_cards(player2_cards, position=CardPosition.KARTY_PRZECIWNIKA_2, face_up=False)
-        except:
-            pass
-        try:
-            # Rysowanie kart przeciwnika 1
-            draw_cards(player3_cards, position=CardPosition.KARTY_PRZECIWNIKA_3, face_up=False)
-        except:
-            pass
+        
+        if dto_UI!=None:
+            
+            # wyn=get_card(dto_UI.playerCards)
+            player_cards.append(dto_UI.playerCards.split(','))
+            hause_cards = dto_UI.cardsOnTable.split(', ')
         # Rysowanie przycisków akcji w prawym dolnym rogu
         draw_action_buttons(mouse_pos, mouse_clicked)
-        draw_player_info(nick, player_score)
+        draw_player_info(nick,0)
         pygame.display.flip()
-        
+        print(player_cards)
         clock.tick(60)
 
 
 start_pygame_ui()
+# def get_card(res):
+#     for id_i_czards in res.split(':'):
+#         id= id_i_czards.split(' ')[0]
+#         if id == IDgracz:
+#             return id_i_czards.split(' ')[1]
+        
+#     return ''

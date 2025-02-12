@@ -11,10 +11,13 @@ if project_root not in sys.path:
 
 from database.client_db import *
 # Server connection settings
-HOST = '10.128.157.223' # <- IP address on my pc on edurom
+# HOST = '10.128.134.128' # <- IP address on my pc on edurom
+HOST = '10.128.157.223'
 PORT = 12345
 client_id = 0
 client = None
+global dto
+dto = None
 
 class MainDTO(object):
     whichPlayerTurn = None
@@ -37,6 +40,16 @@ class MainDTO(object):
         self.gameState = gameState
         self.playerCards = playerCards
         self.cardsOnTable = cardsOnTable
+def return_client_id():
+    return client_id
+
+def return_dto():
+    global dto
+    if dto is not None:
+        print(f"dto: {dto.playerCards} cline.py")
+    else:
+        print('dto is None client.py')
+    return dto
 
 def start_client(name):
     """Start the client and send its information to the server."""
@@ -49,8 +62,6 @@ def start_client(name):
     # else:
     #     client_id, name, department = client_info
     #     print(f"Existing Client: ID={client_id}, Name={name}, Department={department}")
-
-    name = input("Enter your name: ")
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((HOST, PORT))
@@ -70,7 +81,13 @@ def start_client(name):
                 message = client.recv(2024).decode('utf-8')
                 if(message != None):
                     print(f"Server: {message}")
-                    dto = MainDTO(**json.loads(message))
+                    dto_temp = MainDTO(**json.loads(message))
+                    global dto
+                    if dto_temp is not None:
+                        dto = dto_temp
+                        print(f"dto: is set")
+               
+                    print(f"dto: {dto.playerCards}")
 
                     if str(dto.whichPlayerTurn) == str(client_id):
                         print('ASK FOR CLIENT INPUT')
@@ -78,12 +95,10 @@ def start_client(name):
                     
                 time.sleep(1)
 
-            client_input = input("You: ")
-            if client_input.lower() == 'quit':
-                print("Disconnecting...")
-                break
+            
+          
 
-            client.sendall(client_input.encode('utf-8'))
+           # client.sendall(client_input.encode('utf-8'))
             time.sleep(1)
             
     except KeyboardInterrupt:
