@@ -298,7 +298,7 @@ def start_pygame_ui():
     total_cards_width = num_cards * card_width + (num_cards - 1) * gap
 
     # Obliczenie pozycji, aby wyśrodkować karty na ekranie (stół)
-
+    
     #zapytanie o karty do konkretnego gracza i ustawienie ich
     pygame.mixer.music.load("././grafiki/music/rozgrywka.mp3")  # Załaduj plik muzyczny
     pygame.mixer.music.play(-1) 
@@ -339,12 +339,14 @@ def start_pygame_ui():
             pass
 
         
-        if dto_UI!=None and len(dto_UI.playerCards.split(','))>0 and len(player_cards)==0:
-            
+        if dto_UI!=None and len(dto_UI.playerCards.split(','))>0 and len(player_cards)!=2 :
             # wyn=get_card(dto_UI.playerCards)
             player_cards=dto_UI.playerCards.split(',')
+            #hause_cards = dto_UI.cardsOnTable.split(', ')
+        if dto_UI!=None and len(dto_UI.cardsOnTable.split(','))>0 and len(hause_cards)!=3 :
+            # wyn=get_card(dto_UI.playerCards)
             hause_cards = dto_UI.cardsOnTable.split(', ')
-
+      
         # Rysowanie przycisków akcji w prawym dolnym rogu
         draw_action_buttons(mouse_pos, mouse_clicked)
         draw_player_info(nick,0)
