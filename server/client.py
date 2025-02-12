@@ -11,7 +11,7 @@ if project_root not in sys.path:
 
 from database.client_db import *
 # Server connection settings
-HOST = '10.128.134.128' # <- IP address on my pc on edurom
+HOST = '10.128.157.223' # <- IP address on my pc on edurom
 PORT = 12345
 
 class MainDTO(object):

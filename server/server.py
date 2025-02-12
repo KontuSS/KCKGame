@@ -14,7 +14,7 @@ from database.server_db import *
 from database.client_db import *
 
 # Server settings
-HOST = '10.128.134.128' # <- IP address on my pc on edurom
+HOST = '10.128.157.223' # <- IP address on my pc on edurom
 PORT = 12345
 
 # Networking
