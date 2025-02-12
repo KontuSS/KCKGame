@@ -46,7 +46,7 @@ class MainDTO(object):
     lastPlayerId = None
     lastPlayerAction = None
     gameState = 1
-    playerCards = {}
+    playerCards = ''
     cardsOnTable = ''
     winnerPlayerId = None
 
@@ -79,8 +79,8 @@ class MainDTO(object):
     def set_game_state(self, game_state):
         self.gameState = game_state
 
-    def set_player_cards(self, cards, player):
-        self.playerCards[player] = cards
+    def set_player_cards(self, cards):
+        self.playerCards = cards
 
     def set_cards_on_table(self, cards):
         self.cardsOnTable = cards
@@ -112,7 +112,7 @@ def deal_cards(players, game_id):
         print(f"Hand: {hand}")
         hand_strength = evaluate_hand(hand)
         save_hand(game_id, player, hand, hand_strength)
-        game.set_player_cards(hand, player)
+        game.set_player_cards(hand)
         #broadcast_single_client(game, i)
         #game.set_player_cards('')
     broadcast(game)
@@ -199,7 +199,7 @@ def process_player_action(action, current_player_socket, current_player_id, betA
 def game_loop():
     time.sleep(2)
     print('Waiting for players!')
-    while len(clientsID)<1:
+    while len(clientsID)<2:
         time.sleep(2)
         pass
     

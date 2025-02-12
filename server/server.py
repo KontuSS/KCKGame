@@ -29,8 +29,15 @@ def broadcast_single_client(obj, client_index):
 
 def broadcast(obj, exclude_client=None):
     """Send a message to all clients."""
-    jsonStr = json.dumps(obj.__dict__)
-    for client in clients:
+    for i, client in enumerate(clients):
+        cards = get_player_cards(clientsID[i])
+        if cards != None and cards[0] != None:
+            obj.set_player_cards(cards[0])
+
+        jsonStr = json.dumps(obj.__dict__)
+
+        print(jsonStr)
+        print(cards)
         client.sendall(jsonStr.encode('utf-8'))
 
 def handle_client(client, address):
