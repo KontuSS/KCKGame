@@ -25,10 +25,11 @@ class MainDTO(object):
     gameState = 0
     playerCards = ''
     cardsOnTable = ''
+    playerCount = 0
 
     def __init__(self, whichPlayerTurn=None, ectsInPool=0, highestEctsToMatch=0, 
                  lastPlayerId=None, lastPlayerAction=None, gameState=None, 
-                 playerCards='', cardsOnTable=''):
+                 playerCards='', cardsOnTable='', playerCount=0):
         self.whichPlayerTurn = whichPlayerTurn
         self.ectsInPool = ectsInPool
         self.highestEctsToMatch = highestEctsToMatch
@@ -37,6 +38,7 @@ class MainDTO(object):
         self.gameState = gameState
         self.playerCards = playerCards
         self.cardsOnTable = cardsOnTable
+        self.playerCount = playerCount
 
 def start_client(name):
     """Start the client and send its information to the server."""
