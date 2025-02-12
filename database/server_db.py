@@ -215,4 +215,5 @@ def get_player_cards(player_id):
     cursor.execute('SELECT cards FROM hands WHERE player_id = ?', (player_id,))
     client = cursor.fetchone()
     conn.close()
+
     return client

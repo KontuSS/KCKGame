@@ -48,6 +48,7 @@ class MainDTO(object):
     gameState = 1
     playerCards = ''
     cardsOnTable = ''
+    winnerPlayerId = None
 
     def reset_game(self):
         self.whichPlayerTurn = None
@@ -58,6 +59,7 @@ class MainDTO(object):
         self.gameState = GameState.WAITING
         self.playerCards = ''
         self.cardsOnTable = ''
+        self.winnerPlayerId = None
 
     def set_which_player_turn(self, player_turn):
         self.whichPlayerTurn = player_turn
@@ -82,6 +84,9 @@ class MainDTO(object):
 
     def set_cards_on_table(self, cards):
         self.cardsOnTable = cards
+        
+    def set_winner_player_ID(self, playerID):
+        self.winnerPlayerId = playerID
 
 # game data
 
@@ -108,9 +113,9 @@ def deal_cards(players, game_id):
         hand_strength = evaluate_hand(hand)
         save_hand(game_id, player, hand, hand_strength)
         game.set_player_cards(hand)
-        broadcast_single_client(game, i)
-        game.set_player_cards('')
-
+        #broadcast_single_client(game, i)
+        #game.set_player_cards('')
+    broadcast(game)
 
 # Evaluate hand strength (simple logic for now)
 def evaluate_hand(hand):
@@ -298,8 +303,13 @@ def game_loop():
 
         if(ectsPool[0] > 50):
             # for player in players:
-            #evaluate_hand()
-            print("ev hand")
+            handStrenght = []            
+            for player in players:
+                cards = get_player_cards(player)
+                handStrenght.append(evaluate_hand(cards, table_hand))
+            winningPlayer = player.index(handStrenght.index(max(handStrenght)))
+            game.set_winner_player_ID(winningPlayer)
+            broadcast(game)
             break
         
     print("Game ended, start new game!")
