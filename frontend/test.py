@@ -266,7 +266,7 @@ def listin_for_changrs_dto():
 
     pass
 def start_pygame_ui():
-
+    liczba_graczy = 1
     nick = start_screen()
     print(nick)
     #print(nick.type())
@@ -330,19 +330,38 @@ def start_pygame_ui():
             draw_cards(player1_cards, position=CardPosition.KARTY_PRZECIWNIKA_1, face_up=False)
         except:
             pass
+        try:
+            # Rysowanie kart przeciwnika 1
+            draw_cards(player2_cards, position=CardPosition.KARTY_PRZECIWNIKA_1, face_up=False)
+        except:
+            pass
+        try:
+            # Rysowanie kart przeciwnika 1
+            draw_cards(player3_cards, position=CardPosition.KARTY_PRZECIWNIKA_1, face_up=False)
+        except:
+            pass
         
         if dto_UI!=None:
             
             # wyn=get_card(dto_UI.playerCards)
             player_cards.append(dto_UI.playerCards.split(','))
             hause_cards = dto_UI.cardsOnTable.split(', ')
+
         # Rysowanie przycisków akcji w prawym dolnym rogu
         draw_action_buttons(mouse_pos, mouse_clicked)
         draw_player_info(nick,0)
         pygame.display.flip()
         print(player_cards)
         clock.tick(60)
-
+        if liczba_graczy == 4:
+            player2_cards=player_cards
+            player3_cards=player_cards
+            player1_cards=player_cards
+        if liczba_graczy == 3:
+            player2_cards=player_cards
+            player1_cards=player_cards
+        if liczba_graczy == 2:
+            player1_cards=player_cards
 
 start_pygame_ui()
 # def get_card(res):
