@@ -49,6 +49,7 @@ class MainDTO(object):
     playerCards = ''
     cardsOnTable = ''
     winnerPlayerId = None
+    playerCount = 0
 
     def reset_game(self):
         self.whichPlayerTurn = None
@@ -87,6 +88,9 @@ class MainDTO(object):
         
     def set_winner_player_ID(self, playerID):
         self.winnerPlayerId = playerID
+
+    def set_player_count(self, count):
+        self.playerCount = count 
 
 # game data
 
@@ -203,9 +207,10 @@ def game_loop():
         time.sleep(2)
         pass
     
+    game.set_player_count(len(clientsID))
+
     #DECK = [f"{rank}{suit}" for suit in SUITS for rank in RANKS]
     random.shuffle(DECK)
-    
     print("Game is starting!")
     
     # Add starting state to DB
