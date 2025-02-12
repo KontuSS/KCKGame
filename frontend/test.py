@@ -12,7 +12,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if project_root not in sys.path:
     sys.path.append(project_root)
 
-from server.client import start_client, return_client_id, return_dto, client
+from server.client import start_client, return_client_id, return_dto, return_client
 
 global PISZ
 PISZ=False
@@ -113,9 +113,11 @@ def draw_action_buttons(mouse_pos, mouse_clicked):
     draw_button(raise_button_rect, "Raise")
 
     # Obsługa kliknięcia przycisków
+    client = return_client()
     if mouse_clicked:
         if fold_rect.collidepoint(mouse_pos) :
             PISZ=False
+
             client.sendall("4".encode('utf-8'))
             print("fold clicked")
         elif hold_rect.collidepoint(mouse_pos):
@@ -332,36 +334,25 @@ def start_pygame_ui():
             pass
         try:
             # Rysowanie kart przeciwnika 1
-            draw_cards(player2_cards, position=CardPosition.KARTY_PRZECIWNIKA_1, face_up=False)
+            draw_cards(player2_cards, position=CardPosition.KARTY_PRZECIWNIKA_2, face_up=False)
         except:
             pass
-        try:
-            # Rysowanie kart przeciwnika 1
-            draw_cards(player3_cards, position=CardPosition.KARTY_PRZECIWNIKA_1, face_up=False)
-        except:
-            pass
+
         
-        if dto_UI!=None:
+        if dto_UI!=None and len(dto_UI.playerCards.split(','))>0 and len(player_cards)==0:
             
             # wyn=get_card(dto_UI.playerCards)
-            player_cards.append(dto_UI.playerCards.split(','))
+            player_cards=dto_UI.playerCards.split(',')
             hause_cards = dto_UI.cardsOnTable.split(', ')
 
         # Rysowanie przycisków akcji w prawym dolnym rogu
         draw_action_buttons(mouse_pos, mouse_clicked)
         draw_player_info(nick,0)
         pygame.display.flip()
-        print(player_cards)
         clock.tick(60)
-        if liczba_graczy == 4:
-            player2_cards=player_cards
-            player3_cards=player_cards
-            player1_cards=player_cards
-        if liczba_graczy == 3:
-            player2_cards=player_cards
-            player1_cards=player_cards
-        if liczba_graczy == 2:
-            player1_cards=player_cards
+        player1_cards = player_cards
+        player2_cards=player_cards
+        
 
 start_pygame_ui()
 # def get_card(res):
