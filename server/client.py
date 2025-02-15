@@ -13,7 +13,7 @@ from database.client_db import *
 # Server connection settings
 # HOST = '10.128.134.128' # <- IP address on my pc on edurom
 global dto,client,client_id
-HOST = '10.128.157.223'
+HOST = '192.168.1.16'
 PORT = 12345
 client_id = 0
 client = None
@@ -51,17 +51,21 @@ def return_client_id():
 def return_dto():
     global dto
     if dto is not None:
-        print(f"dto: {dto.playerCards} cline.py")
+       # print(f"dto: {dto.playerCards} cline.py")
+        pass
     else:
-        print('dto is None client.py')
+        #print('dto is None client.py')
+        pass
     return dto
 
 def return_client():
     global client
     if client is not None:
-        print(f"client ok cline.py")
+        #print(f"client ok cline.py")
+        pass
     else:
-        print('client is None client.py')
+       # print('client is None client.py')
+       pass
     return client
 
 def start_client(name):

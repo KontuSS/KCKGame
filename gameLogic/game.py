@@ -203,7 +203,7 @@ def process_player_action(action, current_player_socket, current_player_id, betA
 def game_loop():
     time.sleep(2)
     print('Waiting for players!')
-    while len(clientsID)<2:
+    while len(clientsID)<1:
         time.sleep(2)
         pass
     

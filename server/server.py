@@ -4,7 +4,7 @@ import sys
 import os
 import time
 import json
-
+print("Server is running...")
 # Add the project root directory to sys.path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if project_root not in sys.path:
@@ -14,7 +14,7 @@ from database.server_db import *
 from database.client_db import *
 
 # Server settings
-HOST = '10.128.157.223' # <- IP address on my pc on edurom
+HOST = '192.168.1.16' # <- IP address on my pc on edurom
 PORT = 12345
 
 # Networking
