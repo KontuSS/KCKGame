@@ -13,7 +13,7 @@ from database.client_db import *
 # Server connection settings
 # HOST = '10.128.134.128' # <- IP address on my pc on edurom
 global dto,client,client_id
-HOST = '192.168.1.16'
+HOST = '192.168.14.30'
 PORT = 12345
 client_id = 0
 client = None

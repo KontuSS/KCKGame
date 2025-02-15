@@ -56,7 +56,7 @@ table_img = pygame.image.load("././grafiki/inne elementy/stol_testowy.png")
 card_back = pygame.image.load("././grafiki\\inne elementy\\tyl_karty.png")
 def get_card_image(card_name):
     value,color = card_name[0], card_name[1:]
-    card_image_path = f"././grafiki\\Karty\\[\'{color+value}\'].png"
+    card_image_path = f"././grafiki\\Karty\\[\'{value+color}\'].png"
     return pygame.image.load(card_image_path)
 def draw_table():
     scaled_table = pygame.transform.scale(table_img, (screen.get_width(), screen.get_height()))
@@ -282,7 +282,7 @@ def listin_for_changrs_dto():
 
     pass
 def start_pygame_ui():
-    hause_cards = ['C4', 'D5', 'H6']
+    hause_cards = ['S5','HQ']
     player_cards = ['C4', 'D5', 'H6']
     liczba_graczy = 1
     nick = start_screen()
@@ -300,7 +300,7 @@ def start_pygame_ui():
     # Dane dotyczące kart – szerokość, wysokość, odstęp
     #player_cards = []
     print("check dto")
-    if dto!=None and dto.whichPlayerTurn==IDgracz:
+    if dto!=None: #and dto.whichPlayerTurn==IDgracz:
         player_cards = dto.playerCards.split(', ')
         print("nie jest none")
         #hause_cards = dto.cardsOnTable.split(', ')
