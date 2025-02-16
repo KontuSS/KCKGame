@@ -253,15 +253,16 @@ def game_loop():
         #TURN LOOP
         while True:                   
             current_player_socket = clients[playerTurn]
-            current_player_id = get_current_player(game_id)
-            print(f"Player ID:{current_player_id[0]} turn")
-            game.set_which_player_turn(int(current_player_id[0]))
+            current_player_id = players[playerTurn]
+            print(f"Player ID:{current_player_id} turn")
+            game.set_which_player_turn(int(current_player_id))
             time.sleep(1)
             broadcast(game)
             
             # PLAYER ACTIONS IN TURN LOOP       
             # Listen to player action
             #print("Listetning to player action")
+            print("Wainting for player action.........")
             action = str(current_player_socket.recv(1024).decode('utf-8'))
                 # :fold
                 # :bet x
@@ -278,7 +279,7 @@ def game_loop():
             print(f"Player Action: {action}") 
             
                 
-            process_player_action(action, current_player_socket, current_player_id[0], betAmount, game_id)
+            process_player_action(action, current_player_socket, current_player_id, betAmount, game_id)
             
             #block bet under maxbet
             if action == PlayerActions.BET.value and betAmount>str(maxBet):
@@ -289,7 +290,7 @@ def game_loop():
             time.sleep(1)
 
             # Rotate between players
-            playerTurn+=1
+            playerTurn+=1 #0 <-> 1
             turnLenght-=1
             
             if playerTurn > (playerCount-1):

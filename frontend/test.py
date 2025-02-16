@@ -86,7 +86,7 @@ def draw_button(button_rect, text, color=(0, 0, 255), text_color=(255, 255, 255)
 # filepath: /c:/Users/krzes/OneDrive/Pulpit/pythonProject/przykladowy flask/KCKGame/test.py
 # ...existing code...
 
-def draw_action_buttons(mouse_pos, mouse_clicked, is_player_turn):
+def draw_action_buttons(mouse_pos, mouse_clicked, mouse_pressed, is_player_turn, client):
     """
     Rysuje cztery przyciski akcji (fold, hold, check, raise).
     """
@@ -103,12 +103,15 @@ def draw_action_buttons(mouse_pos, mouse_clicked, is_player_turn):
     # Kolory przycisków i tekstu, zależnie od tury
     active_color = (0, 0, 255)
     inactive_color = (100, 100, 100)
+    pressed_color = (255, 0, 0)
     active_text = (255, 255, 255)
     inactive_text = (180, 180, 180)
 
     # Wybór koloru na podstawie flagi is_player_turn
     def pick_colors():
-        if is_player_turn:
+        if mouse_clicked and is_player_turn:
+            return pressed_color, active_text  # Change color when
+        elif is_player_turn:
             return active_color, active_text
         else:
             return inactive_color, inactive_text
@@ -133,7 +136,9 @@ def draw_action_buttons(mouse_pos, mouse_clicked, is_player_turn):
 
     # Obsługa kliknięcia przycisków tylko wtedy, gdy to tura gracza
     if is_player_turn and mouse_clicked:
-        client = return_client()
+        if client is None:
+            print("Client is NONE")
+
         if fold_rect.collidepoint(mouse_pos):
             client.sendall("4".encode('utf-8'))
             print("fold clicked")
@@ -283,7 +288,7 @@ def listin_for_changrs_dto():
     pass
 def start_pygame_ui():
     hause_cards = []
-    player_cards = ['C4', 'D5', 'H6']
+    player_cards = ['C4', 'D5']
     liczba_graczy = 1
     nick = start_screen()
     print(nick)
@@ -291,6 +296,7 @@ def start_pygame_ui():
     threading.Thread(target=start_client, args=(nick,)).start()
     time.sleep(2)
     IDgracz = return_client_id()
+    client = return_client()
     # tu wpisuje imię gracza i robię pentelkę aż reszta graczy wkroczy 
     #IDgracz = int(client.recv(1024).decode('utf-8'))
     time.sleep(5)
@@ -320,15 +326,19 @@ def start_pygame_ui():
     player_score = 0
     #player_cards=[]
     while True:
+        time.sleep(0.1)
         dto_UI = return_dto()
         #update odnośnie co się dzieje
         mouse_clicked = False
+        mouse_pressed = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_clicked = True
+                mouse_pressed = True
+                
         mouse_pos = pygame.mouse.get_pos()
 
         draw_table()
@@ -352,8 +362,6 @@ def start_pygame_ui():
         except:
             pass
 
-        print("START PLAYER TURN CHECKING")
-        print(f"ID: {IDgracz}, ID turn: {dto_UI.whichPlayerTurn}")
         if dto_UI!=None and len(dto_UI.playerCards.split(','))>0 and len(player_cards)!=2 :
             # wyn=get_card(dto_UI.playerCards)
             player_cards=dto_UI.playerCards.split(',')
@@ -370,12 +378,12 @@ def start_pygame_ui():
             my_turn = False
         #tu trzeba wstawić check czy wygrana czy przegrana i wyświetlić funkcje tylko plus wyswietlenie kart domu Przemek
         # Rysowanie przycisków akcji w prawym dolnym rogu
-        draw_action_buttons(mouse_pos, mouse_clicked, my_turn)
+        draw_action_buttons(mouse_pos, mouse_clicked, mouse_pressed, my_turn, client)
         draw_player_info(nick,0)
         pygame.display.flip()
         clock.tick(60)
         player1_cards = player_cards
-        player2_cards=player_cards
+        player2_cards = player_cards
         
 
 start_pygame_ui()
