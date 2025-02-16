@@ -352,7 +352,8 @@ def start_pygame_ui():
         except:
             pass
 
-        
+        print("START PLAYER TURN CHECKING")
+        print(f"ID: {IDgracz}, ID turn: {dto_UI.whichPlayerTurn}")
         if dto_UI!=None and len(dto_UI.playerCards.split(','))>0 and len(player_cards)!=2 :
             # wyn=get_card(dto_UI.playerCards)
             player_cards=dto_UI.playerCards.split(',')
@@ -360,8 +361,11 @@ def start_pygame_ui():
         if dto_UI!=None and len(dto_UI.cardsOnTable.split(','))>0 and len(hause_cards)!=3 :
             # wyn=get_card(dto_UI.playerCards)
             hause_cards = dto_UI.cardsOnTable.split(', ')
-        if dto_UI is not None:
-            my_turn = (IDgracz == dto_UI.whichPlayerTurn)
+        if dto_UI is not None and dto_UI.whichPlayerTurn is not None:
+            if int(IDgracz) == int(dto_UI.whichPlayerTurn):
+                my_turn = True
+            else:
+                my_turn = False
         else:
             my_turn = False
         #tu trzeba wstawić check czy wygrana czy przegrana i wyświetlić funkcje tylko plus wyswietlenie kart domu Przemek
