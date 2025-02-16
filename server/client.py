@@ -12,12 +12,15 @@ if project_root not in sys.path:
 from database.client_db import *
 # Server connection settings
 # HOST = '10.128.134.128' # <- IP address on my pc on edurom
-global dto,client,client_id
-HOST = '192.168.14.30'
-PORT = 12345
-client_id = 0
-client = None
+global dto
+global client
+global client_id
 
+HOST = '192.168.18.71'
+PORT = 12345
+
+client_id = None
+client = None
 dto = None
 
 class MainDTO(object):
@@ -46,6 +49,10 @@ class MainDTO(object):
 
 def return_client_id():
     global client_id
+    if client_id is not None:
+        print(f"client_id: {client_id} client.py")
+    else:
+        print('client_id is None client.py')
     return client_id
 
 def return_dto():
@@ -86,7 +93,9 @@ def start_client(name):
     # Send client ID to server
     client.sendall(name.encode('utf-8'))
 
-    client_id = client.recv(1024).decode('utf-8')
+    global client_id
+    if client_id == None:
+        client_id = client.recv(1024).decode('utf-8')
 
     # Receive welcome message from server
     welcome_message = client.recv(1024).decode('utf-8')
