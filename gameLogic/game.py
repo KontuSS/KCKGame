@@ -21,6 +21,7 @@ from database.server_db import *
 from database.client_db import *
 from server.server import broadcast, start_server, broadcast_single_client, clients, clientsID
 from enum import Enum
+from evaluate import evaluate_hand
 
 class PlayerActions(Enum):
     BET = '1'
@@ -114,25 +115,12 @@ def deal_cards(players, game_id):
     for i, player in enumerate(players):
         hand = ', '.join([get_single_card(), get_single_card()])  # Deal 2 cards per player
         print(f"Hand: {hand}")
-        hand_strength = evaluate_hand(hand)
+        hand_strength = ''
         save_hand(game_id, player, hand, hand_strength)
         game.set_player_cards(hand)
         #broadcast_single_client(game, i)
         #game.set_player_cards('')
     broadcast(game)
-
-# Evaluate hand strength (simple logic for now)
-def evaluate_hand(hand):
-    cards = hand.split(', ')
-    ranks = [card.split(' ')[0] for card in cards]
-    
-    # Check if all ranks are the same (simplified check for pairs)
-    if len(set(ranks)) == 1:
-        return "Pair"
-    elif len(set(ranks)) == 2:
-        return "Full House"
-    else:
-        return "High Card"
 
 def player_action(player_id, action_type):
     set_player_state(player_id, action_type)
@@ -325,7 +313,21 @@ def game_loop():
             break
         
     print("Game ended, start new game!")
-            
+
+    final_players_results = []
+    
+    # evaluate each player hand
+    for player in players:
+        hand = get_player_cards(player)
+        list_hand = hand[0].split(', ')
+        final_players_results.append(evaluate_hand(list_hand, table_hand.split(', ')))
+
+    max_result = max(final_players_results)
+    for i, result in enumerate(final_players_results):
+        if result == max_result:
+            # set winning player
+            game.set_winner_player_ID(players[i])   
+            break         
 
 if __name__ == "__main__":
     threading.Thread(target=game_loop).start()

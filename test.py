@@ -33,10 +33,11 @@ class MainDTO(object):
     gameState = 0
     playerCards = ''
     cardsOnTable = ''
+    winnerPlayerId = None
 
     def __init__(self, whichPlayerTurn=None, ectsInPool=0, highestEctsToMatch=0, 
                  lastPlayerId=None, lastPlayerAction=None, gameState=None, 
-                 playerCards='', cardsOnTable=''):
+                 playerCards='', cardsOnTable='', winnerPlayerId=None):
         self.whichPlayerTurn = whichPlayerTurn
         self.ectsInPool = ectsInPool
         self.highestEctsToMatch = highestEctsToMatch
@@ -45,6 +46,7 @@ class MainDTO(object):
         self.gameState = gameState
         self.playerCards = playerCards
         self.cardsOnTable = cardsOnTable
+        self.winnerPlayerId = winnerPlayerId
 pygame.init()
 
 WIDTH, HEIGHT = 800, 600
