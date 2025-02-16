@@ -37,11 +37,10 @@ class MainDTO(object):
     gameState = 0
     playerCards = ''
     cardsOnTable = ''
-    winnerPlayerId = None
 
     def __init__(self, whichPlayerTurn=None, ectsInPool=0, highestEctsToMatch=0, 
                  lastPlayerId=None, lastPlayerAction=None, gameState=None, 
-                 playerCards='', cardsOnTable='', winnerPlayerId=None):
+                 playerCards='', cardsOnTable=''):
         self.whichPlayerTurn = whichPlayerTurn
         self.ectsInPool = ectsInPool
         self.highestEctsToMatch = highestEctsToMatch
@@ -50,8 +49,6 @@ class MainDTO(object):
         self.gameState = gameState
         self.playerCards = playerCards
         self.cardsOnTable = cardsOnTable
-        self.winnerPlayerId = winnerPlayerId
-
 pygame.init()
 
 WIDTH, HEIGHT = 800, 600
@@ -382,22 +379,14 @@ def start_pygame_ui():
             # wyn=get_card(dto_UI.playerCards)
             hause_cards = dto_UI.cardsOnTable.split(', ')
         if dto_UI is not None and dto_UI.whichPlayerTurn is not None:
-            if str(IDgracz) == str(dto_UI.whichPlayerTurn):
+            if int(IDgracz) == int(dto_UI.whichPlayerTurn):
                 my_turn = True
             else:
                 my_turn = False
-        if dto_UI is not None and dto_UI.winnerPlayerId is not None :
-            if str(IDgracz) == str(dto_UI.winnerPlayerId):
-                display_win()
-            else: 
-                display_loss()
-            my_turn = False
         else:
             my_turn = False
         #tu trzeba wstawić check czy wygrana czy przegrana i wyświetlić funkcje tylko plus wyswietlenie kart domu Przemek
         # Rysowanie przycisków akcji w prawym dolnym rogu
-
-
         draw_action_buttons(mouse_pos, mouse_clicked, mouse_pressed, my_turn, client)
         draw_player_info(nick, your_ects)
         pygame.display.flip()

@@ -33,11 +33,10 @@ class MainDTO(object):
     playerCards = ''
     cardsOnTable = ''
     playerCount = 0
-    winnerPlayerId = None
 
     def __init__(self, whichPlayerTurn=None, ectsInPool=0, highestEctsToMatch=0, 
                  lastPlayerId=None, lastPlayerAction=None, gameState=None, 
-                 playerCards='', cardsOnTable='', playerCount=0, winnerPlayerId=None):
+                 playerCards='', cardsOnTable='', playerCount=0):
         self.whichPlayerTurn = whichPlayerTurn
         self.ectsInPool = ectsInPool
         self.highestEctsToMatch = highestEctsToMatch
@@ -47,7 +46,6 @@ class MainDTO(object):
         self.playerCards = playerCards
         self.cardsOnTable = cardsOnTable
         self.playerCount = playerCount
-        self.winnerPlayerId = winnerPlayerId
 
 def return_client_id():
     global client_id
