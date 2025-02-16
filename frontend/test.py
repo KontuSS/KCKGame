@@ -17,6 +17,10 @@ from server.client import start_client, return_client_id, return_dto, return_cli
 global PISZ
 PISZ=False
 global IDgracz
+
+global your_ects
+your_ects = 30
+
 class CardPosition(Enum):
     KARTY_STOLU = 1
     KARTY_GRACZA = 2
@@ -149,6 +153,8 @@ def draw_action_buttons(mouse_pos, mouse_clicked, mouse_pressed, is_player_turn,
             client.sendall("3".encode('utf-8'))
             print("check clicked")
         elif raise_button_rect.collidepoint(mouse_pos):
+            global your_ects
+            your_ects -= 2
             client.sendall("1 2".encode('utf-8'))
             print("Raise clicked")
 
@@ -290,6 +296,9 @@ def start_pygame_ui():
     hause_cards = []
     player_cards = ['C4', 'D5']
     liczba_graczy = 1
+
+    global your_ects
+
     nick = start_screen()
     print(nick)
     #print(nick.type())
@@ -379,7 +388,7 @@ def start_pygame_ui():
         #tu trzeba wstawić check czy wygrana czy przegrana i wyświetlić funkcje tylko plus wyswietlenie kart domu Przemek
         # Rysowanie przycisków akcji w prawym dolnym rogu
         draw_action_buttons(mouse_pos, mouse_clicked, mouse_pressed, my_turn, client)
-        draw_player_info(nick,0)
+        draw_player_info(nick, your_ects)
         pygame.display.flip()
         clock.tick(60)
         player1_cards = player_cards
