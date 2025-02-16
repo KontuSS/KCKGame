@@ -235,7 +235,8 @@ def game_loop():
     # Modify games table in DB
     start_game(game_id, first_player_id)
     
-    DEVELOP_game_state = 3
+    DEVELOP_game_state = get_game_state(game_id)
+    DEVELOP_game_state = int(DEVELOP_game_state[0])
     
     deal_cards(players, game_id)
     table_hand = ''
@@ -243,15 +244,18 @@ def game_loop():
     #MAIN GAME LOOP \/
     while True:
         playerTurn = 0
+        turnLenght = playerCount
         game_state = get_game_state(game_id)
-        if game_state[0] == GameState.FINISHED.value:
+        game_state = int(game_state[0])
+        if game_state == GameState.FINISHED.value:
                 break        
-        print(f"game state: {game_state}")
-        table_hand = deal_cards_on_table(game_state[0], table_hand)
+        print(f"\n----------------game state: {game_state}---------------\n")
+        table_hand = deal_cards_on_table(game_state, table_hand)
         print(f"Cards on table: {table_hand}")
         time.sleep(1)
         #TURN LOOP
-        while True:                   
+        while True:
+            print(f"PlayerTurn: {playerTurn} | turnLenght{turnLenght}")                   
             current_player_socket = clients[playerTurn]
             current_player_id = players[playerTurn]
             print(f"Player ID:{current_player_id} turn")
@@ -291,31 +295,33 @@ def game_loop():
 
             # Rotate between players
             playerTurn+=1 #0 <-> 1
-            turnLenght-=1
-            
             if playerTurn > (playerCount-1):
                 playerTurn=0
+                            
+            turnLenght-=1
+            if turnLenght<=0: 
+                break
                 
             next_player = players[playerTurn]
-            if turnLenght==0: break
-            print("NEXT PLAYER TURN")
+            
+            print("\n############NEXT PLAYER TURN###########")
             set_next_player(next_player, game_id)
             
         # After turn
-        DEVELOP_game_state+=1
-        update_game_state(game_id, DEVELOP_game_state)
+        game_state+=1
+        update_game_state(game_id, game_state)
         ectsPool = get_ectsPool(game_id)
         print(f"Current ects pool: {ectsPool}")
 
-        if(ectsPool[0] > 50):
+        if(ectsPool[0] > 50 or game_state == 7):
             # for player in players:
-            handStrenght = []            
-            for player in players:
-                cards = get_player_cards(player)
-                handStrenght.append(evaluate_hand(cards, table_hand))
-            winningPlayer = player.index(handStrenght.index(max(handStrenght)))
-            game.set_winner_player_ID(winningPlayer)
-            broadcast(game)
+            # handStrenght = []            
+            # for player in players:
+            #     cards = get_player_cards(player)
+            #     handStrenght.append(evaluate_hand(cards, table_hand))
+            # winningPlayer = player.index(handStrenght.index(max(handStrenght)))
+            # game.set_winner_player_ID(winningPlayer)
+            # broadcast(game)
             break
         
     print("Game ended, start new game!")

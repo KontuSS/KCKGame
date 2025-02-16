@@ -315,9 +315,9 @@ def start_pygame_ui():
     # Dane dotyczące kart – szerokość, wysokość, odstęp
     #player_cards = []
     print("check dto")
-    if dto!=None: #and dto.whichPlayerTurn==IDgracz:
+    if dto!=None and len(dto.playerCards.split(', ')) == 2: #and dto.whichPlayerTurn==IDgracz:
         player_cards = dto.playerCards.split(', ')
-        print("nie jest none")
+        print(f"Player cards: {player_cards}")
         #hause_cards = dto.cardsOnTable.split(', ')
     print(player_cards)
     card_width = 71
@@ -371,11 +371,11 @@ def start_pygame_ui():
         except:
             pass
 
-        if dto_UI!=None and len(dto_UI.playerCards.split(','))>0 and len(player_cards)!=2 :
+        if dto_UI!=None and len(dto_UI.playerCards.split(', '))>0 and len(player_cards)!=2 :
             # wyn=get_card(dto_UI.playerCards)
-            player_cards=dto_UI.playerCards.split(',')
+            player_cards=dto_UI.playerCards.split(', ')
             #hause_cards = dto_UI.cardsOnTable.split(', ')
-        if dto_UI!=None and len(dto_UI.cardsOnTable.split(','))>0 and len(hause_cards)!=3 :
+        if dto_UI!=None and len(dto_UI.cardsOnTable.split(', '))>0 :
             # wyn=get_card(dto_UI.playerCards)
             hause_cards = dto_UI.cardsOnTable.split(', ')
         if dto_UI is not None and dto_UI.whichPlayerTurn is not None:

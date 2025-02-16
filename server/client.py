@@ -135,5 +135,3 @@ def start_client(name):
 if __name__ == "__main__":
     start_client(None)
 
-# clients =   [soc1, soc2]
-# clientsID = [ID1, ID2]
